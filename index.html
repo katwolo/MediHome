@@ -40,7 +40,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Inter',system-ui,sans-serif;b
 .hdr-logo .ico{width:32px;height:32px;background:var(--primary);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1rem}
 .hdr-logo .txt{font-size:1.125rem;font-weight:700;color:var(--gray-900);letter-spacing:-.02em}
 .hdr-logo .txt span{color:var(--primary)}
-.hdr-btn{width:44px;height:44px;border-radius:50%;background:var(--gray-100);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1.125rem;color:var(--gray-600)}
+.hdr-btn{width:44px;height:44px;border-radius:50%;background:var(--gray-100);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1.125rem;color:var(--gray-600);transition:all .18s}
+.hdr-btn:active{background:var(--gray-200);transform:scale(.92)}
 
 /* MAIN */
 .main{padding-top:var(--hdr-h);padding-bottom:calc(var(--nav-h) + .5rem);min-height:100vh}
@@ -51,8 +52,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Inter',system-ui,sans-serif;b
 @keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
 
 /* BOTTOM NAV */
-.bnav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:500px;height:var(--nav-h);background:rgba(255,255,255,.97);backdrop-filter:blur(20px);border-top:1px solid var(--gray-200);display:flex;align-items:center;justify-content:space-around;padding:0 .25rem;z-index:100}
-.ni{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.2rem;padding:.5rem 0;min-height:44px;cursor:pointer;border:none;background:none;color:var(--gray-400);position:relative}
+.bnav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:500px;height:var(--nav-h);background:rgba(255,255,255,.97);backdrop-filter:blur(20px);border-top:1px solid var(--gray-200);display:flex;z-index:99}
+.ni{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.2rem;padding:.5rem 0;min-height:44px;cursor:pointer;border:none;background:none;color:var(--gray-400);padding-bottom:.25rem;transition:color .18s;font-size:0}
 .ni.active{color:var(--primary)}
 .ni-ico{font-size:1.375rem;line-height:1}
 .ni-lbl{font-size:.6875rem;font-weight:500}
@@ -125,7 +126,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Inter',system-ui,sans-serif;b
 
 /* SEARCH */
 .search{position:relative;margin-bottom:.875rem}
-.search input{width:100%;height:46px;padding:0 1rem 0 2.625rem;background:var(--white);border:1.5px solid var(--gray-200);border-radius:12px;font-size:.9375rem;color:var(--gray-800);outline:none;transition:border-color .15s;font-family:inherit}
+.search input{width:100%;height:46px;padding:0 1rem 0 2.625rem;background:var(--white);border:1.5px solid var(--gray-200);border-radius:12px;font-size:.9375rem;color:var(--gray-800);outline:none;transition:all .18s}
 .search input:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(37,99,235,.1)}
 .search input::placeholder{color:var(--gray-400)}
 .search-ico{position:absolute;left:.8rem;top:50%;transform:translateY(-50%);font-size:1rem;color:var(--gray-400);pointer-events:none}
@@ -133,11 +134,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Inter',system-ui,sans-serif;b
 /* FILTER PILLS */
 .pills{display:flex;gap:.4rem;overflow-x:auto;scrollbar-width:none;padding-bottom:.25rem;margin-bottom:.875rem}
 .pills::-webkit-scrollbar{display:none}
-.pill{display:inline-flex;align-items:center;padding:.325rem .75rem;border-radius:20px;font-size:.8125rem;font-weight:500;white-space:nowrap;cursor:pointer;border:1.5px solid var(--gray-200);background:var(--white);color:var(--gray-600);transition:all .12s}
+.pill{display:inline-flex;align-items:center;padding:.325rem .75rem;border-radius:20px;font-size:.8125rem;font-weight:500;white-space:nowrap;cursor:pointer;border:1.5px solid var(--gray-200);background:var(--white);color:var(--gray-600);transition:all .18s}
 .pill.active{background:var(--primary);border-color:var(--primary);color:#fff}
 
 /* BUTTONS */
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:.325rem;height:44px;padding:0 1.125rem;border-radius:12px;font-size:.9375rem;font-weight:600;cursor:pointer;border:none;transition:opacity .12s,transform .08s;white-space:nowrap;font-family:inherit}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:.325rem;height:44px;padding:0 1.125rem;border-radius:12px;font-size:.9375rem;font-weight:600;cursor:pointer;border:none;transition:all .18s}
 .btn:active{opacity:.82;transform:scale(.98)}
 .btn-p{background:var(--primary);color:#fff}
 .btn-s{background:var(--gray-100);color:var(--gray-700)}
@@ -149,7 +150,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Inter',system-ui,sans-serif;b
 .btn-full{width:100%}
 
 /* FAB */
-.fab{position:fixed;bottom:calc(var(--nav-h) + 1rem);right:calc(50% - 234px);width:56px;height:56px;border-radius:50%;background:var(--primary);color:#fff;font-size:1.625rem;display:none;align-items:center;justify-content:center;box-shadow:0 6px 20px rgba(37,99,235,.38);cursor:pointer;border:none;z-index:90;transition:transform .12s,box-shadow .12s;line-height:1}
+.fab{position:fixed;bottom:calc(var(--nav-h) + 1rem);right:calc(50% - 234px);width:56px;height:56px;border-radius:50%;background:var(--primary);color:#fff;font-size:1.625rem;display:none;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(37,99,235,.3);cursor:pointer;border:none;transition:all .18s}
 .fab:active{transform:scale(.92)}
 @media(max-width:500px){.fab{right:1rem}}
 
@@ -218,7 +219,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Inter',system-ui,sans-serif;b
 /* FORMS */
 .fg{margin-bottom:.875rem}
 .fg label{display:block;font-size:.8125rem;font-weight:600;color:var(--gray-700);margin-bottom:.325rem}
-.fc{width:100%;height:46px;padding:0 .875rem;background:var(--gray-50);border:1.5px solid var(--gray-200);border-radius:11px;font-size:.9375rem;color:var(--gray-800);outline:none;transition:all .15s;font-family:inherit;appearance:none}
+.fc{width:100%;height:46px;padding:0 .875rem;background:var(--gray-50);border:1.5px solid var(--gray-200);border-radius:11px;font-size:.9375rem;color:var(--gray-800);outline:none;transition:all .18s}
 .fc:focus{border-color:var(--primary);background:var(--white);box-shadow:0 0 0 3px rgba(37,99,235,.1)}
 .fc::placeholder{color:var(--gray-400)}
 textarea.fc{height:auto;min-height:76px;padding:.75rem .875rem;resize:none}
@@ -226,11 +227,11 @@ textarea.fc{height:auto;min-height:76px;padding:.75rem .875rem;resize:none}
 .f-hint{font-size:.75rem;color:var(--gray-400);margin-top:.25rem}
 
 /* REPORT */
-.report-box{background:var(--gray-50);border:1px solid var(--gray-200);border-radius:11px;padding:1rem;font-family:monospace;font-size:.8125rem;color:var(--gray-700);line-height:1.65;white-space:pre-wrap;word-break:break-all;max-height:55vh;overflow-y:auto}
+.report-box{background:var(--gray-50);border:1px solid var(--gray-200);border-radius:11px;padding:1rem;font-family:monospace;font-size:.8125rem;color:var(--gray-700);line-height:1.65;white-space:pre-wrap;word-break:break-word}
 
 /* TOAST */
 #toasts{position:fixed;top:calc(var(--hdr-h) + .75rem);left:50%;transform:translateX(-50%);width:calc(100% - 2rem);max-width:460px;z-index:300;display:flex;flex-direction:column;gap:.5rem;pointer-events:none}
-.toast{display:flex;align-items:center;gap:.625rem;padding:.8rem 1rem;background:var(--gray-900);color:#fff;border-radius:12px;font-size:.875rem;font-weight:500;box-shadow:0 6px 20px rgba(0,0,0,.2);animation:tIn .18s ease;pointer-events:auto}
+.toast{display:flex;align-items:center;gap:.625rem;padding:.8rem 1rem;background:var(--gray-900);color:#fff;border-radius:12px;font-size:.875rem;font-weight:500;box-shadow:0 6px 20px rgba(0,0,0,.25);animation:tIn .3s ease;pointer-events:all}
 .toast.ok{background:#065F46}
 .toast.err{background:#991B1B}
 .toast.warn{background:#92400E}
@@ -250,7 +251,7 @@ textarea.fc{height:auto;min-height:76px;padding:.75rem .875rem;resize:none}
     <div class="ico">💊</div>
     <div class="txt">Medi<span>Home</span></div>
   </div>
-  <button class="hdr-btn" id="hdr-btn" title="Inicio">🔔</button>
+  <button class="hdr-btn" id="hdr-btn" title="Sincronizar">☁️</button>
 </header>
 
 <main class="main">
@@ -348,15 +349,20 @@ textarea.fc{height:auto;min-height:76px;padding:.75rem .875rem;resize:none}
     </div>
 
     <div class="set-grp">
-      <div class="set-grp-ttl">Sincronización</div>
+      <div class="set-grp-ttl">Sincronización con Google Sheets</div>
       <div class="set-item" id="s-gsheets">
         <div class="set-ico" style="background:#FEF9C3">🔗</div>
-        <div class="set-body"><div class="set-ttl">Google Sheets</div><div class="set-desc" id="gsheets-status">URL de Apps Script no configurada</div></div>
+        <div class="set-body"><div class="set-ttl">Configurar Google Sheets</div><div class="set-desc" id="gsheets-status">URL del Apps Script no configurada</div></div>
         <span class="set-arr">›</span>
       </div>
       <div class="set-item" id="s-sync" style="display:none">
-        <div class="set-ico" style="background:var(--primary-light)">☁️</div>
+        <div class="set-ico" style="background:var(--primary-light)">📤</div>
         <div class="set-body"><div class="set-ttl">Sincronizar ahora</div><div class="set-desc">Enviar datos a Google Sheets</div></div>
+        <span class="set-arr">›</span>
+      </div>
+      <div class="set-item" id="s-load" style="display:none">
+        <div class="set-ico" style="background:var(--success-light)">📥</div>
+        <div class="set-body"><div class="set-ttl">Cargar desde Google Sheets</div><div class="set-desc">Descargar medicamentos del sheet</div></div>
         <span class="set-arr">›</span>
       </div>
     </div>
@@ -539,9 +545,9 @@ textarea.fc{height:auto;min-height:76px;padding:.75rem .875rem;resize:none}
 <div class="overlay center" id="m-gsheets">
   <div class="modal">
     <div class="modal-ttl">Google Sheets</div>
-    <p style="font-size:.875rem;color:var(--gray-500);margin-bottom:1rem;line-height:1.5">Ingresa la URL Web App de tu Google Apps Script para sincronizar datos.</p>
+    <p style="font-size:.875rem;color:var(--gray-500);margin-bottom:1rem;line-height:1.5">Ingresa la URL Web App de tu Google Apps Script para sincronizar medicamentos con un Google Sheet.</p>
     <div class="fg"><label>URL del Apps Script</label><input class="fc" id="gs-url" type="url" placeholder="https://script.google.com/…"></div>
-    <div class="f-hint">Publicar › Implementar como app web en Apps Script.</div>
+    <div class="f-hint">Copia desde: Implementar › Nueva implementación › Selecciona "App web"</div>
     <div class="modal-actions">
       <button class="btn btn-s" id="gs-cancel">Cancelar</button>
       <button class="btn btn-p" id="gs-save">Guardar</button>
@@ -683,8 +689,8 @@ const App = (() => {
 
     const al = document.getElementById('alerts-list');
     al.innerHTML = alerts.length === 0
-      ? `<div class="al-item success"><span class="al-dot"></span><div class="al-body"><div class="al-ttl">Todo en orden</div><div class="al-desc">No hay alertas activas</div></div><span class="al-badge">✓ OK</span></div>`
-      : alerts.slice(0,6).map(a=>`<div class="al-item ${a.cls}"><span class="al-dot"></span><div class="al-body"><div class="al-ttl">${esc(a.title)}</div><div class="al-desc">${esc(a.desc)}</div></div><span class="al-badge">${esc(a.badge)}</span></div>`).join('');
+      ? `<div class="al-item success"><span class="al-dot"></span><div class="al-body"><div class="al-ttl">Todo en orden</div><div class="al-desc">No hay alertas activas</div></div></div>`
+      : alerts.slice(0,6).map(a=>`<div class="al-item ${a.cls}"><span class="al-dot"></span><div class="al-body"><div class="al-ttl">${esc(a.title)}</div><div class="al-desc">${esc(a.desc)}</div></div><span class="al-badge">${a.badge}</span></div>`).join('');
 
     const recent = [...S.doses].sort((a,b)=>new Date(b.createdAt)-new Date(a.createdAt)).slice(0,5);
     const rd = document.getElementById('recent-doses');
@@ -693,7 +699,7 @@ const App = (() => {
       : recent.map(d=>{
           const med = S.meds.find(m=>m.id===d.medicineId);
           const nm  = med ? med.name : d.medicineName || '?';
-          return `<div class="dose-item"><div class="dose-dot"></div><div class="dose-info"><div class="dose-med">${esc(nm)}</div><div class="dose-time">${d.date}${d.time?' · '+d.time:''}</div></div><div class="dose-qty">${d.quantity} ud.</div></div>`;
+          return `<div class="dose-item"><div class="dose-dot"></div><div class="dose-info"><div class="dose-med">${esc(nm)}</div><div class="dose-time">${d.date}${d.time?' · '+d.time:''}</div></div><div class="dose-qty">${d.quantity}</div></div>`;
         }).join('');
   }
 
@@ -714,7 +720,7 @@ const App = (() => {
     const list = document.getElementById('med-list');
 
     if (filtered.length === 0) {
-      list.innerHTML = `<div class="empty"><div class="empty-ico">💊</div><div class="empty-ttl">${S.meds.length===0?'Botiquín vacío':'Sin resultados'}</div><div class="empty-desc">${S.meds.length===0?'Pulsa + para añadir tu primer medicamento':'Prueba con otros filtros'}</div></div>`;
+      list.innerHTML = `<div class="empty"><div class="empty-ico">💊</div><div class="empty-ttl">${S.meds.length===0?'Botiquín vacío':'Sin resultados'}</div><div class="empty-desc">${S.meds.length===0?'Toca + para añadir medicamentos':'Prueba otro filtro'}</div></div>`;
       return;
     }
 
@@ -999,254 +1005,322 @@ const App = (() => {
       const t = S.treats.find(x=>x.id===id);
       confirm('¿Eliminar tratamiento?', `"${t.name}" y su historial se eliminarán.`, () => {
         S.treats = S.treats.filter(x=>x.id!==id);
-        S.doses  = S.doses.filter(d=>d.treatmentId!==id);
+        S.doses = S.doses.filter(x=>x.treatmentId!==id);
         save(); renderTreats();
         toast('Tratamiento eliminado');
       });
     }
   }
 
-  // ── SIGRE ACTIONS ─────────────────────────────────────────
-  function toggleSIGRE(id) {
-    const m = S.meds.find(x=>x.id===id);
-    if (!m) return;
-    m.forSIGRE = !m.forSIGRE;
-    m.sigreDate = m.forSIGRE ? new Date().toISOString().slice(0,10) : null;
-    save(); updateSIGREBadge();
-    toast(m.forSIGRE ? `${m.name} marcado para SIGRE` : `${m.name} retirado de SIGRE`);
-    if (S.section==='botiquin') renderInv();
-    else if (S.section==='sigre') renderSIGRE();
+  // ── MODALS ────────────────────────────────────────────────
+  function closeM(id) { document.getElementById(id).classList.remove('active'); }
+  function openM(id)  { document.getElementById(id).classList.add('active'); }
+
+  // ── SETTINGS FUNCTIONS ────────────────────────────────────
+  function updateGSheetsStatus() {
+    const hasUrl = !!S.gsUrl;
+    document.getElementById('gsheets-status').textContent = hasUrl 
+      ? '✓ Configurado' 
+      : 'URL de Apps Script no configurada';
+    document.getElementById('s-sync').style.display = hasUrl ? 'flex' : 'none';
+    document.getElementById('s-load').style.display = hasUrl ? 'flex' : 'none';
   }
 
-  function delivered(id) {
-    confirm('¿Marcar como entregado?','El medicamento se eliminará del inventario.',()=>{
+  async function syncToGSheets() {
+    if (!S.gsUrl) {
+      toast('URL de Google Sheets no configurada', 'err');
+      return;
+    }
+    
+    toast('Sincronizando...', '');
+    try {
+      const response = await fetch(S.gsUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'sync',
+          meds: S.meds,
+          treats: S.treats,
+          doses: S.doses
+        })
+      });
+      
+      if (!response.ok) throw new Error('Error en la respuesta');
+      const result = await response.json();
+      
+      if (result.success) {
+        toast('✓ Sincronizado con Google Sheets', 'ok');
+      } else {
+        toast('Error: ' + (result.error || 'Desconocido'), 'err');
+      }
+    } catch(err) {
+      toast('Error al sincronizar: ' + err.message, 'err');
+    }
+  }
+
+  async function loadFromGSheets() {
+    if (!S.gsUrl) {
+      toast('URL de Google Sheets no configurada', 'err');
+      return;
+    }
+    
+    toast('Cargando...', '');
+    try {
+      const response = await fetch(S.gsUrl + '?action=fetch');
+      if (!response.ok) throw new Error('Error en la respuesta');
+      const result = await response.json();
+      
+      if (result.success && result.meds) {
+        S.meds = result.meds;
+        save();
+        renderInv();
+        updateSIGREBadge();
+        toast('✓ Datos cargados desde Google Sheets', 'ok');
+      } else {
+        toast('Error: ' + (result.error || 'Sin datos'), 'err');
+      }
+    } catch(err) {
+      toast('Error al cargar: ' + err.message, 'err');
+    }
+  }
+
+  // ── PUBLIC API ────────────────────────────────────────────
+  return {
+    load, save,
+    go, render,
+    openMedModal, saveMed,
+    openTreatModal, saveTreat,
+    openDoseModal, saveDose,
+    delConfirm,
+    toggleSIGRE(id) {
+      const m = S.meds.find(x=>x.id===id);
+      m.forSIGRE = !m.forSIGRE;
+      save(); renderInv(); updateSIGREBadge();
+      toast(m.forSIGRE ? '♻️ Marcado para SIGRE' : 'Quitado de SIGRE');
+    },
+    toggleActive(id, active) {
+      const t = S.treats.find(x=>x.id===id);
+      t.active = active;
+      save(); renderTreats();
+    },
+    delivered(id) {
       S.meds = S.meds.filter(x=>x.id!==id);
       save(); renderSIGRE(); updateSIGREBadge();
-      toast('Entregado y eliminado del inventario','ok');
-    },'Confirmar entrega');
-  }
+      toast('✓ Medicamento entregado en SIGRE');
+    },
+    showSIGREReport() {
+      const marked = S.meds.filter(m => m.forSIGRE);
+      let report = 'INFORME SIGRE\n';
+      report += new Date().toLocaleDateString('es-ES', {weekday:'long', year:'numeric', month:'long', day:'numeric'}) + '\n\n';
+      report += 'MEDICAMENTOS PARA DESECHAR:\n';
+      report += '─'.repeat(40) + '\n';
+      marked.forEach(m => {
+        report += `• ${m.name}\n  Cantidad: ${m.quantity} ${m.unit}\n`;
+        if (m.expiryDate) report += `  Caducidad: ${fmtMonth(m.expiryDate)}\n`;
+        if (m.notes) report += `  Notas: ${m.notes}\n`;
+        report += '\n';
+      });
+      report += '─'.repeat(40) + '\n';
+      report += `Total: ${marked.length} medicamento(s)\n`;
+      report += `Generado: ${new Date().toLocaleString('es-ES')}`;
+      
+      document.getElementById('sigre-rep-content').textContent = report;
+      openM('m-sigre-rep');
+    },
 
-  function toggleActive(id, val) {
-    const t = S.treats.find(x=>x.id===id);
-    if (t) { t.active = val; save(); toast(val?'Activado':'Pausado'); renderTreats(); }
-  }
+    // Settings handlers
+    syncToGSheets,
+    loadFromGSheets,
+    updateGSheetsStatus,
 
-  // ── SIGRE REPORT ──────────────────────────────────────────
-  function showSIGREReport() {
-    const meds = S.meds.filter(m=>m.forSIGRE);
-    const date = new Date().toLocaleDateString('es-ES',{year:'numeric',month:'long',day:'numeric'});
-    let r = `INFORME DE ENTREGA SIGRE\nFecha: ${date}\n${'─'.repeat(38)}\n\n`;
-    meds.forEach((m,i)=>{
-      r += `${i+1}. ${m.name}\n   Cantidad: ${m.quantity} ${m.unit}\n`;
-      if (m.expiryDate) r += `   Caducidad: ${fmtMonth(m.expiryDate)}\n`;
-      r += '\n';
-    });
-    r += `${'─'.repeat(38)}\nTotal: ${meds.length} medicamento${meds.length!==1?'s':''}\n\nPunto SIGRE: Farmacia más cercana\nwww.sigre.es`;
-    document.getElementById('sigre-rep-content').textContent = r;
-    document.getElementById('m-sigre-rep').classList.add('active');
-  }
+    exportJSON() {
+      const data = { meds: S.meds, treats: S.treats, doses: S.doses };
+      const blob = new Blob([JSON.stringify(data, null, 2)], {type: 'application/json'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `medihome-${new Date().toISOString().split('T')[0]}.json`;
+      a.click();
+      toast('JSON exportado');
+    },
 
-  // ── IMPORT / EXPORT ───────────────────────────────────────
-  function exportJSON() {
-    dl('medihome-backup.json', JSON.stringify({version:'1.0',exportDate:new Date().toISOString(),medicines:S.meds,treatments:S.treats,doses:S.doses},null,2),'application/json');
-    toast('Backup JSON descargado','ok');
-  }
-  function exportCSV() {
-    const hdr = 'nombre,cantidad,unidad,stock_minimo,caducidad,ubicacion,categoria,notas,sigre';
-    const rows = S.meds.map(m=>[cv(m.name),m.quantity,cv(m.unit),m.minStock||'',m.expiryDate||'',cv(m.location||''),cv(m.category||''),cv(m.notes||''),m.forSIGRE?'si':'no'].join(','));
-    dl('medihome-inventario.csv',[hdr,...rows].join('\n'),'text/csv');
-    toast('CSV exportado','ok');
-  }
-  function downloadTemplate() {
-    dl('plantilla-medihome.csv',
-      'nombre,cantidad,unidad,stock_minimo,caducidad,ubicacion,categoria,notas\nParacetamol 500mg,20,comprimidos,5,2026-06,Botiquín principal,analgésico,Tomar con agua\nIbuprofeno 400mg,12,comprimidos,4,2025-12,Armario baño,antiinflamatorio,\nAmoxicilina 500mg,15,cápsulas,0,2025-08,Nevera,antibiótico,Refrigerado',
-      'text/csv');
-    toast('Plantilla descargada','ok');
-  }
-  const cv = s => !s?'':(s.includes(',')||s.includes('"'))?`"${s.replace(/"/g,'""')}"`:s;
-  const dl = (name,content,mime) => {
-    const a = Object.assign(document.createElement('a'),{href:URL.createObjectURL(new Blob([content],{type:mime})),download:name});
-    a.click(); URL.revokeObjectURL(a.href);
-  };
+    exportCSV() {
+      let csv = 'nombre,cantidad,unidad,stock_minimo,caducidad,ubicacion,categoria,notas\n';
+      S.meds.forEach(m => {
+        const row = [m.name, m.quantity, m.unit, m.minStock || '', m.expiryDate || '', m.location || '', m.category || '', m.notes || ''];
+        csv += row.map(c => `"${String(c).replace(/"/g, '""')}"`).join(',') + '\n';
+      });
+      const blob = new Blob([csv], {type: 'text/csv'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `medihome-${new Date().toISOString().split('T')[0]}.csv`;
+      a.click();
+      toast('CSV exportado');
+    },
 
-  function importCSV(txt, merge) {
-    const lines = txt.trim().split('\n').filter(l=>l.trim());
-    if (lines.length < 2) return 0;
-    const hdr = lines[0].split(',').map(h=>h.trim().toLowerCase());
-    const gi  = k => hdr.indexOf(k);
-    const ni=gi('nombre'),qi=gi('cantidad'),ui=gi('unidad'),mi=gi('stock_minimo'),ei=gi('caducidad'),li=gi('ubicacion'),ci=gi('categoria'),noi=gi('notas');
-    if (ni===-1) return -1;
-    const imported = [];
-    for (let i=1;i<lines.length;i++) {
-      const c = parseCSV(lines[i]);
-      const nm = c[ni]?.trim(); if (!nm) continue;
-      imported.push({id:uid(),name:nm,quantity:parseFloat(c[qi])||0,unit:c[ui]?.trim()||'unidades',minStock:parseFloat(c[mi])||0,expiryDate:c[ei]?.trim()||null,location:c[li]?.trim()||'',category:c[ci]?.trim()||'',notes:noi>=0?c[noi]?.trim()||'':'',forSIGRE:false,createdAt:new Date().toISOString()});
-    }
-    if (merge) S.meds = [...S.meds, ...imported];
-    else S.meds = imported;
-    save(); return imported.length;
-  }
+    downloadTemplate() {
+      const template = 'nombre,cantidad,unidad,stock_minimo,caducidad,ubicacion,categoria,notas\nParacetamol 500mg,20,comprimidos,5,2025-06,Botiquín,analgésico,Con comida\n';
+      const blob = new Blob([template], {type: 'text/csv'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'plantilla-medihome.csv';
+      a.click();
+      toast('Plantilla descargada');
+    },
 
-  function importJSON(txt, merge) {
-    let d; try { d=JSON.parse(txt); } catch(e) { return false; }
-    if (Array.isArray(d.medicines)) {
-      if (merge) { const ids=new Set(S.meds.map(m=>m.id)); d.medicines.forEach(m=>{ if(!ids.has(m.id)) S.meds.push(m); }); }
-      else { S.meds=d.medicines; if(d.treatments) S.treats=d.treatments; if(d.doses) S.doses=d.doses; }
-    }
-    save(); return true;
-  }
-
-  function parseCSV(line) {
-    const r=[]; let cur='',inQ=false;
-    for (const ch of line) {
-      if (ch==='"') inQ=!inQ;
-      else if (ch===','&&!inQ) { r.push(cur); cur=''; }
-      else cur+=ch;
-    }
-    r.push(cur); return r;
-  }
-
-  // ── CLOSE MODAL ───────────────────────────────────────────
-  const closeM = id => document.getElementById(id).classList.remove('active');
-
-  // ── SEED DATA ─────────────────────────────────────────────
-  function seed() {
-    if (S.meds.length) return;
-    const now = new Date();
-    const mo = (delta) => {
-      const d = new Date(now); d.setMonth(d.getMonth()+delta);
-      return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
-    };
-    S.meds = [
-      {id:uid(),name:'Paracetamol 500mg',quantity:20,unit:'comprimidos',minStock:5,expiryDate:mo(6),location:'Botiquín principal',category:'analgésico',notes:'',forSIGRE:false,createdAt:new Date().toISOString()},
-      {id:uid(),name:'Ibuprofeno 400mg',quantity:3,unit:'comprimidos',minStock:5,expiryDate:mo(1),location:'Armario baño',category:'antiinflamatorio',notes:'Con comida',forSIGRE:false,createdAt:new Date().toISOString()},
-      {id:uid(),name:'Omeprazol 20mg',quantity:28,unit:'cápsulas',minStock:7,expiryDate:mo(8),location:'Botiquín principal',category:'digestivo',notes:'En ayunas',forSIGRE:false,createdAt:new Date().toISOString()},
-      {id:uid(),name:'Vitamina D3',quantity:0,unit:'cápsulas',minStock:10,expiryDate:mo(12),location:'Nevera',category:'vitaminas',notes:'',forSIGRE:false,createdAt:new Date().toISOString()},
-      {id:uid(),name:'Loratadina 10mg',quantity:8,unit:'comprimidos',minStock:3,expiryDate:mo(-2),location:'Botiquín principal',category:'antialérgico',notes:'',forSIGRE:true,sigreDate:new Date().toISOString().slice(0,10),createdAt:new Date().toISOString()},
-    ];
-    const omep = S.meds[2];
-    S.treats = [{id:uid(),name:'Protección gástrica',medicineId:omep.id,medicineName:omep.name,doseQty:1,frequency:'once',instructions:'En ayunas, por la mañana',startDate:new Date().toISOString().slice(0,10),endDate:null,active:true,createdAt:new Date().toISOString()}];
-    save();
-  }
-
-  // ── EVENTS ────────────────────────────────────────────────
-  function setupEvents() {
-    document.querySelectorAll('.ni').forEach(b => b.addEventListener('click',()=>go(b.dataset.s)));
-    document.getElementById('hdr-btn').onclick = () => go('inicio');
-
-    // Medicine
-    document.getElementById('mm-cancel').onclick = () => closeM('m-med');
-    document.getElementById('mm-save').onclick    = saveMed;
-
-    // Treatment
-    document.getElementById('mt-cancel').onclick = () => closeM('m-treat');
-    document.getElementById('mt-save').onclick    = saveTreat;
-
-    // Dose
-    document.getElementById('md-cancel').onclick = () => closeM('m-dose');
-    document.getElementById('md-save').onclick    = saveDose;
-
-    // Confirm
-    document.getElementById('cfm-no').onclick  = () => closeM('m-confirm');
-    document.getElementById('cfm-yes').onclick = () => {
-      if (S.confirmCb) { S.confirmCb(); S.confirmCb=null; }
-      closeM('m-confirm');
-    };
-
-    // SIGRE report
-    document.getElementById('srep-close').onclick = () => closeM('m-sigre-rep');
-    document.getElementById('srep-copy').onclick  = () => {
-      navigator.clipboard.writeText(document.getElementById('sigre-rep-content').textContent)
-        .then(()=>toast('Informe copiado','ok')).catch(()=>toast('No se pudo copiar','err'));
-    };
-
-    // Search + filter
-    document.getElementById('search').addEventListener('input', e => { S.q=e.target.value; renderInv(); });
-    document.querySelectorAll('.pill').forEach(p => p.addEventListener('click',()=>{
-      document.querySelectorAll('.pill').forEach(x=>x.classList.remove('active'));
-      p.classList.add('active'); S.filter=p.dataset.f; renderInv();
-    }));
-
-    // Settings
-    document.getElementById('s-export-json').onclick = exportJSON;
-    document.getElementById('s-export-csv').onclick  = exportCSV;
-    document.getElementById('s-template').onclick    = downloadTemplate;
-    document.getElementById('s-import').onclick = () => {
-      document.getElementById('imp-file').value='';
-      document.getElementById('imp-merge').checked=true;
+    importData() {
       document.getElementById('m-import').classList.add('active');
-    };
-    document.getElementById('imp-cancel').onclick = () => closeM('m-import');
-    document.getElementById('imp-ok').onclick = () => {
+    },
+
+    openGSheetsModal() {
+      document.getElementById('gs-url').value = S.gsUrl || '';
+      openM('m-gsheets');
+    },
+
+    saveGSheetsUrl() {
+      const url = document.getElementById('gs-url').value.trim();
+      if (!url) {
+        S.gsUrl = '';
+        save();
+        updateGSheetsStatus();
+        closeM('m-gsheets');
+        toast('URL configurada');
+        return;
+      }
+      if (!url.startsWith('https://script.google.com')) {
+        toast('URL inválida. Debe ser de script.google.com', 'err');
+        return;
+      }
+      S.gsUrl = url;
+      save();
+      updateGSheetsStatus();
+      closeM('m-gsheets');
+      toast('✓ URL guardada');
+    },
+
+    processImport() {
       const file = document.getElementById('imp-file').files[0];
       if (!file) { toast('Selecciona un archivo','err'); return; }
-      const merge = document.getElementById('imp-merge').checked;
+      
       const reader = new FileReader();
-      reader.onload = e => {
-        const content = e.target.result;
-        if (file.name.endsWith('.json')) {
-          if (importJSON(content, merge)) { toast(`Datos importados correctamente`,'ok'); closeM('m-import'); updateSIGREBadge(); render(S.section); }
-          else toast('JSON inválido','err');
-        } else {
-          const n = importCSV(content, merge);
-          if (n === -1) { toast('Columna "nombre" no encontrada','err'); return; }
-          if (n === 0)  { toast('Sin datos en el archivo','err'); return; }
-          toast(`${n} medicamentos importados`,'ok');
-          closeM('m-import'); updateSIGREBadge(); renderInv();
+      reader.onload = (e) => {
+        try {
+          let data = [];
+          if (file.name.endsWith('.json')) {
+            const json = JSON.parse(e.target.result);
+            data = json.meds || json;
+          } else {
+            const lines = e.target.result.split('\n');
+            const headers = lines[0].split(',').map(h => h.trim().toLowerCase());
+            for (let i = 1; i < lines.length; i++) {
+              if (!lines[i].trim()) continue;
+              const values = lines[i].split(',').map(v => v.trim().replace(/^"|"$/g, ''));
+              const med = {
+                id: uid(),
+                name: values[headers.indexOf('nombre')] || '',
+                quantity: parseFloat(values[headers.indexOf('cantidad')]) || 0,
+                unit: values[headers.indexOf('unidad')] || 'comprimidos',
+                minStock: parseFloat(values[headers.indexOf('stock_minimo')]) || 0,
+                expiryDate: values[headers.indexOf('caducidad')] || null,
+                location: values[headers.indexOf('ubicacion')] || '',
+                category: values[headers.indexOf('categoria')] || '',
+                notes: values[headers.indexOf('notas')] || '',
+                forSIGRE: false,
+                createdAt: new Date().toISOString(),
+              };
+              if (med.name) data.push(med);
+            }
+          }
+          
+          const merge = document.getElementById('imp-merge').checked;
+          if (!merge) S.meds = [];
+          S.meds.push(...data);
+          save();
+          renderInv();
+          updateSIGREBadge();
+          closeM('m-import');
+          toast(`✓ ${data.length} medicamento(s) importado(s)`,'ok');
+        } catch(err) {
+          toast('Error al procesar archivo: '+err.message,'err');
         }
       };
       reader.readAsText(file);
-    };
-
-    // GSheets
-    document.getElementById('s-gsheets').onclick = () => {
-      document.getElementById('gs-url').value = S.gsUrl;
-      document.getElementById('m-gsheets').classList.add('active');
-    };
-    document.getElementById('gs-cancel').onclick = () => closeM('m-gsheets');
-    document.getElementById('gs-save').onclick   = () => {
-      S.gsUrl = document.getElementById('gs-url').value.trim();
-      localStorage.setItem('mh_gs', S.gsUrl);
-      document.getElementById('gsheets-status').textContent = S.gsUrl ? 'URL configurada ✓' : 'URL no configurada';
-      document.getElementById('s-sync').style.display = S.gsUrl ? 'flex' : 'none';
-      closeM('m-gsheets'); toast('URL guardada','ok');
-    };
-    document.getElementById('s-sync').onclick = async () => {
-      if (!S.gsUrl) return;
-      try {
-        const r = await fetch(S.gsUrl,{method:'POST',body:JSON.stringify({medicines:S.meds,treatments:S.treats}),headers:{'Content-Type':'application/json'}});
-        r.ok ? toast('Sincronizado con Google Sheets','ok') : toast('Error al sincronizar','err');
-      } catch { toast('Error de conexión','err'); }
-    };
-
-    // Clear
-    document.getElementById('s-clear').onclick = () => confirm(
-      '¿Borrar todos los datos?',
-      'Se eliminarán medicamentos, tratamientos y dosis. No se puede deshacer.',
-      ()=>{ S.meds=[];S.treats=[];S.doses=[];save();updateSIGREBadge();render(S.section);toast('Datos borrados'); },
-      '🗑️ Borrar todo'
-    );
-
-    // Close overlays on backdrop click
-    document.querySelectorAll('.overlay').forEach(o => o.addEventListener('click',e=>{ if(e.target===o) o.classList.remove('active'); }));
-  }
-
-  // ── INIT ──────────────────────────────────────────────────
-  function init() {
-    load(); seed(); setupEvents();
-    // Restore gsheets status
-    if (S.gsUrl) {
-      document.getElementById('gsheets-status').textContent = 'URL configurada ✓';
-      document.getElementById('s-sync').style.display = 'flex';
-    }
-    updateSIGREBadge();
-    go('inicio');
-  }
-
-  return { init, openMedModal, openTreatModal, openDoseModal, delConfirm, toggleSIGRE, delivered, toggleActive, showSIGREReport };
+    },
+  };
 })();
 
-document.addEventListener('DOMContentLoaded', () => App.init());
+// ── DOM INIT ──────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+  App.load();
+  App.updateGSheetsStatus();
+
+  // Navigation
+  document.querySelectorAll('.ni').forEach(b => b.onclick = () => App.go(b.dataset.s));
+  document.getElementById('hdr-btn').onclick = () => App.syncToGSheets();
+
+  // Search & Filter
+  document.getElementById('search').oninput = e => { App.S.q = e.target.value; App.renderInv(); };
+  document.querySelectorAll('.pill').forEach(p => p.onclick = () => {
+    document.querySelectorAll('.pill').forEach(x => x.classList.remove('active'));
+    p.classList.add('active');
+    App.S.filter = p.dataset.f;
+    App.renderInv();
+  });
+
+  // Medicine
+  document.getElementById('mm-save').onclick = () => App.saveMed();
+  document.getElementById('mm-cancel').onclick = () => App.closeM('m-med');
+
+  // Treatment
+  document.getElementById('mt-save').onclick = () => App.saveTreat();
+  document.getElementById('mt-cancel').onclick = () => App.closeM('m-treat');
+
+  // Dose
+  document.getElementById('md-save').onclick = () => App.saveDose();
+  document.getElementById('md-cancel').onclick = () => App.closeM('m-dose');
+
+  // Confirm
+  document.getElementById('cfm-yes').onclick = () => { App.S.confirmCb?.(); App.closeM('m-confirm'); };
+  document.getElementById('cfm-no').onclick = () => App.closeM('m-confirm');
+
+  // Settings
+  document.getElementById('s-export-json').onclick = () => App.exportJSON();
+  document.getElementById('s-export-csv').onclick = () => App.exportCSV();
+  document.getElementById('s-template').onclick = () => App.downloadTemplate();
+  document.getElementById('s-import').onclick = () => App.importData();
+  document.getElementById('s-gsheets').onclick = () => App.openGSheetsModal();
+  document.getElementById('s-sync').onclick = () => App.syncToGSheets();
+  document.getElementById('s-load').onclick = () => App.loadFromGSheets();
+  document.getElementById('s-clear').onclick = () => App.confirm('¿Borrar todo?', 'Se eliminarán todos los medicamentos, tratamientos y dosis. Esta acción es irreversible.', () => {
+    App.S.meds = []; App.S.treats = []; App.S.doses = [];
+    App.save(); App.go('inicio');
+    toast('Todos los datos fueron borrados');
+  }, 'Borrar');
+
+  // Google Sheets Modal
+  document.getElementById('gs-save').onclick = () => App.saveGSheetsUrl();
+  document.getElementById('gs-cancel').onclick = () => App.closeM('m-gsheets');
+
+  // Import Modal
+  document.getElementById('imp-ok').onclick = () => App.processImport();
+  document.getElementById('imp-cancel').onclick = () => App.closeM('m-import');
+
+  // SIGRE Report
+  document.getElementById('srep-close').onclick = () => App.closeM('m-sigre-rep');
+  document.getElementById('srep-copy').onclick = () => {
+    const text = document.getElementById('sigre-rep-content').textContent;
+    navigator.clipboard.writeText(text).then(() => toast('Copiado al portapapeles','ok'));
+  };
+
+  // Close overlays on backdrop click
+  document.querySelectorAll('.overlay').forEach(o => {
+    o.onclick = (e) => { if (e.target === o) o.classList.remove('active'); };
+  });
+
+  App.go('inicio');
+});
 </script>
 </body>
 </html>
