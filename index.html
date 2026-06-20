@@ -542,7 +542,9 @@ textarea.fc{height:auto;min-height:76px;padding:.75rem .875rem;resize:none}
     <p style="font-size:.875rem;color:var(--gray-500);margin-bottom:1rem;line-height:1.5">Ingresa la URL Web App de tu Google Apps Script para sincronizar datos.</p>
     <div class="fg"><label>URL del Apps Script</label><input class="fc" id="gs-url" type="url" placeholder="https://script.google.com/…"></div>
     <div class="f-hint">Publicar › Implementar como app web en Apps Script.</div>
+    <div id="gs-test-result" style="display:none;font-size:.8125rem;padding:.5rem .75rem;border-radius:8px;margin-top:.25rem"></div>
     <div class="modal-actions">
+      <button class="btn btn-s" id="gs-test">Probar</button>
       <button class="btn btn-s" id="gs-cancel">Cancelar</button>
       <button class="btn btn-p" id="gs-save">Guardar</button>
     </div>
@@ -575,60 +577,83 @@ const App = (() => {
   };
 
   // ── API LAYER ────────────────────────────────────────────
+  // NOTES TÈCNIQUES (Google Apps Script):
+  //   • redirect:'follow'   → obligatori; Apps Script retorna 302 a script.googleusercontent.com
+  //   • credentials:'omit'  → evita preflight OPTIONS per a cookies de sessió
+  //   • Content-Type:'text/plain;charset=utf-8' → mai 'application/json' (trenca CORS per preflight)
+  //   • URL ha de ser /exec  → mai /dev (requereix autenticació)
+  //   • Desplegament: Execute as Me · Who has access: Anyone (sense login)
   const API = {
     url: '',
+
+    // GET — llança error si falla; el cridor ha de fer catch
     async get(entitat, filtre = 'tots') {
       if (!this.url) return null;
-      try {
-        const res = await fetch(`${this.url}?entitat=${entitat}&filtre=${filtre}`, { redirect: 'follow' });
-        const d = await res.json();
-        return d.ok ? d.registres : null;
-      } catch { return null; }
+      const res = await fetch(
+        `${this.url}?entitat=${entitat}&filtre=${filtre}`,
+        { redirect: 'follow', credentials: 'omit' }
+      );
+      if (!res.ok) throw new Error(`HTTP ${res.status} ${res.statusText}`);
+      const text = await res.text();
+      let d;
+      try { d = JSON.parse(text); }
+      catch { throw new Error('La resposta no és JSON. Comprova que el script retorna ContentService (no HtmlService).'); }
+      if (!d.ok) throw new Error('Script error: ' + (d.error || 'desconegut'));
+      return d.registres;
     },
+
+    // POST — llança error si falla; el cridor ha de fer catch
     async post(payload) {
       if (!this.url) return { ok: true };
-      try {
-        const res = await fetch(this.url, {
-          method: 'POST',
-          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-          body: JSON.stringify(payload),
-          redirect: 'follow',
-        });
-        return await res.json();
-      } catch (err) { return { ok: false, error: err.message }; }
+      const res = await fetch(this.url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify(payload),
+        redirect: 'follow',
+        credentials: 'omit',
+      });
+      if (!res.ok) throw new Error(`HTTP ${res.status} ${res.statusText}`);
+      const text = await res.text();
+      try { return JSON.parse(text); }
+      catch { throw new Error('Resposta POST no és JSON'); }
     },
-    async loadAll() {
-      const [meds, treats, doses] = await Promise.all([
-        this.get('medicaments', 'tots'),
-        this.get('tractaments', 'tots'),
-        this.get('dosis', 'tots'),
-      ]);
-      return { meds, treats, doses };
+
+    // Test ràpid de connexió: retorna { ok, n, error }
+    async test() {
+      try {
+        const registres = await this.get('medicaments', 'tots');
+        return { ok: true, n: Array.isArray(registres) ? registres.length : 0 };
+      } catch (err) {
+        return { ok: false, error: err.message };
+      }
     },
   };
 
-  // Crida API en background; mostra toast si falla
+  // Crida API en background — mostra toast amb el missatge real si falla
   function apiPost(payload) {
     if (!API.url) return;
-    API.post(payload).then(r => {
-      if (r && !r.ok) toast('⚠️ Sync: ' + (r.error || 'Error de connexió'), 'warn');
-    });
+    API.post(payload).catch(err => toast('⚠️ Sync: ' + err.message, 'warn'));
   }
 
   async function syncFromAPI() {
     toast('Sincronizando con Google Sheets…');
-    const { meds, treats, doses } = await API.loadAll();
-    let updated = false;
-    if (meds   !== null) { S.meds   = meds;   updated = true; }
-    if (treats !== null) { S.treats = treats; updated = true; }
-    if (doses  !== null) { S.doses  = doses;  updated = true; }
-    if (updated) {
+    try {
+      const [meds, treats, doses] = await Promise.all([
+        API.get('medicaments', 'tots'),
+        API.get('tractaments', 'tots'),
+        API.get('dosis', 'tots'),
+      ]);
+      if (Array.isArray(meds))   S.meds   = meds;
+      if (Array.isArray(treats)) S.treats = treats;
+      if (Array.isArray(doses))  S.doses  = doses;
       save(); updateSIGREBadge(); render(S.section);
       toast('Datos sincronizados ✓', 'ok');
-    } else {
-      toast('No se pudieron cargar datos de la API', 'warn');
+      return true;
+    } catch (err) {
+      toast('Error sync: ' + err.message, 'err');
+      console.error('[syncFromAPI]', err);
+      return false;
     }
-    return updated;
   }
 
   // ── Persist ──────────────────────────────────────────────
@@ -1295,15 +1320,31 @@ const App = (() => {
       document.getElementById('m-gsheets').classList.add('active');
     };
     document.getElementById('gs-cancel').onclick = () => closeM('m-gsheets');
+    document.getElementById('gs-test').onclick = async () => {
+      const testUrl = document.getElementById('gs-url').value.trim();
+      const el = document.getElementById('gs-test-result');
+      if (!testUrl) { el.style.display='block'; el.style.background='#FEF3C7'; el.style.color='#92400E'; el.textContent='Introduce una URL primero.'; return; }
+      el.style.display='block'; el.style.background='#EFF6FF'; el.style.color='#1E40AF'; el.textContent='Probando conexión…';
+      const prev = API.url; API.url = testUrl;
+      const r = await API.test();
+      API.url = prev;
+      if (r.ok) {
+        el.style.background='#ECFDF5'; el.style.color='#065F46';
+        el.textContent = `✓ Conectado · ${r.n} medicamento${r.n !== 1 ? 's' : ''} en el Sheet`;
+      } else {
+        el.style.background='#FEF2F2'; el.style.color='#991B1B';
+        el.textContent = '✗ ' + r.error;
+      }
+    };
     document.getElementById('gs-save').onclick   = async () => {
       const newUrl = document.getElementById('gs-url').value.trim();
       S.gsUrl = newUrl;
       API.url = newUrl;
       localStorage.setItem('mh_gs', newUrl);
+      document.getElementById('gs-test-result').style.display = 'none';
       document.getElementById('gsheets-status').textContent = newUrl ? 'URL configurada ✓' : 'URL no configurada';
       document.getElementById('s-sync').style.display = newUrl ? 'flex' : 'none';
       closeM('m-gsheets'); toast('URL guardada','ok');
-      // Carrega dades de l'API immediatament si s'acaba de configurar
       if (newUrl) await syncFromAPI();
     };
     // s-sync: descarrega totes les dades de Google Sheets (substitueix local)

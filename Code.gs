@@ -22,6 +22,17 @@
  *                 Quantitat | Data | Hora | Notes | DataCreacio | Estat
  */
 
+// ── CONNEXIÓ AL FULL ─────────────────────────────────────────
+// Si el script és autònom (no creat des de Extensions > Apps Script del full),
+// posa aquí l'ID del Google Sheet (part de la URL: /spreadsheets/d/<ID>/edit).
+// Si és un script lligat al full, deixa-ho buit.
+const SPREADSHEET_ID = '';
+function getSpreadsheet() {
+  return SPREADSHEET_ID
+    ? SpreadsheetApp.openById(SPREADSHEET_ID)
+    : getSpreadsheet();
+}
+
 // ── CONFIGURACIÓ PER ENTITAT ──────────────────────────────────
 const CFG = {
   medicaments: {
@@ -66,7 +77,7 @@ function doGet(e) {
     const cfg     = CFG[entitat];
     if (!cfg) return jsonResponse({ ok: false, error: 'Entitat desconeguda: ' + entitat });
 
-    const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(cfg.SHEET_NAME);
+    const sheet = getSpreadsheet().getSheetByName(cfg.SHEET_NAME);
     if (!sheet) return jsonResponse({ ok: false, error: 'Full no trobat: ' + cfg.SHEET_NAME });
 
     const data = sheet.getDataRange().getValues();
@@ -95,7 +106,7 @@ function doPost(e) {
     if (!cfg)   return jsonResponse({ ok: false, error: 'Entitat desconeguda: ' + entitat });
     if (!accio) return jsonResponse({ ok: false, error: 'Camp "accio" obligatori' });
 
-    const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(cfg.SHEET_NAME);
+    const sheet = getSpreadsheet().getSheetByName(cfg.SHEET_NAME);
     if (!sheet) return jsonResponse({ ok: false, error: 'Full no trobat: ' + cfg.SHEET_NAME });
 
     if (accio === 'crear')    return crear(sheet, payload, entitat, cfg);
@@ -292,7 +303,7 @@ function jsonResponse(data) {
 // Executa manualment des de Apps Script > Executar > initSheets
 // per crear les 3 pestanyes amb les capçaleres correctes.
 function initSheets() {
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const ss = getSpreadsheet();
   Object.values(CFG).forEach(cfg => {
     let sheet = ss.getSheetByName(cfg.SHEET_NAME);
     if (!sheet) {
