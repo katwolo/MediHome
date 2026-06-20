@@ -2,7 +2,7 @@
  * MediHome — Google Apps Script Backend
  *
  * Google Sheet estructurat en 3 pestanyes:
- *   · Medicaments   (13 columnes: A–M)
+ *   · Medicaments   (15 columnes: A–O)
  *   · Tractaments   (12 columnes: A–L)
  *   · Dosis         (10 columnes: A–J)
  *
@@ -14,8 +14,8 @@
  *   Usar la URL /exec al frontend (mai /dev en producció).
  *
  * CAPÇALERES DEL FULL (fila 1, s'ha de crear manualment o via initSheets()):
- *   Medicaments:  ID | Nom | Quantitat | Unitat | StockMinim | Caducitat |
- *                 Ubicacio | Categoria | Notes | SIGRE | DataSIGRE | DataCreacio | Estat
+ *   Medicaments:  ID | Nom | Lab | Quantitat | Unitat | StockMinim | Caducitat |
+ *                 Ubicacio | Categoria | Mascota | Notes | SIGRE | DataSIGRE | DataCreacio | Estat
  *   Tractaments:  ID | Nom | MedicamentID | MedicamentNom | DosisQuantitat |
  *                 Frequencia | Instruccions | DataInici | DataFi | Actiu | DataCreacio | Estat
  *   Dosis:        ID | TractamentID | MedicamentID | MedicamentNom |
@@ -30,7 +30,7 @@ const SPREADSHEET_ID = '';
 function getSpreadsheet() {
   return SPREADSHEET_ID
     ? SpreadsheetApp.openById(SPREADSHEET_ID)
-    : getSpreadsheet();
+    : SpreadsheetApp.getActiveSpreadsheet();
 }
 
 // ── CONFIGURACIÓ PER ENTITAT ──────────────────────────────────
