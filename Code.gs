@@ -38,12 +38,12 @@ const CFG = {
   medicaments: {
     SHEET_NAME: 'Medicaments',
     COLS: {
-      ID: 1, NOM: 2, QUANTITAT: 3, UNITAT: 4, STOCK_MINIM: 5,
-      CADUCITAT: 6, UBICACIO: 7, CATEGORIA: 8, MASCOTA: 9, NOTES: 10,
-      SIGRE: 11, DATA_SIGRE: 12, DATA_CREACIO: 13, ESTAT: 14,
+      ID: 1, NOM: 2, LAB: 3, QUANTITAT: 4, UNITAT: 5, STOCK_MINIM: 6,
+      CADUCITAT: 7, UBICACIO: 8, CATEGORIA: 9, MASCOTA: 10, NOTES: 11,
+      SIGRE: 12, DATA_SIGRE: 13, DATA_CREACIO: 14, ESTAT: 15,
     },
-    TOTAL_COLS: 14,
-    HEADERS: ['ID','Nom','Quantitat','Unitat','StockMinim','Caducitat',
+    TOTAL_COLS: 15,
+    HEADERS: ['ID','Nom','Lab','Quantitat','Unitat','StockMinim','Caducitat',
               'Ubicacio','Categoria','Mascota','Notes','SIGRE','DataSIGRE','DataCreacio','Estat'],
   },
   tractaments: {
@@ -128,6 +128,7 @@ function crear(sheet, p, entitat, cfg) {
   if (entitat === 'medicaments') {
     fila[C.ID - 1]           = id;
     fila[C.NOM - 1]          = p.name          || '';
+    fila[C.LAB - 1]          = p.lab           || '';
     fila[C.QUANTITAT - 1]    = p.quantity       !== undefined ? Number(p.quantity) : 0;
     fila[C.UNITAT - 1]       = p.unit           || 'unitats';
     fila[C.STOCK_MINIM - 1]  = p.minStock       !== undefined ? Number(p.minStock) : 0;
@@ -184,6 +185,7 @@ function editar(sheet, p, entitat, cfg) {
 
   if (entitat === 'medicaments') {
     if (p.name       !== undefined) sheet.getRange(row, C.NOM).setValue(p.name);
+    if (p.lab        !== undefined) sheet.getRange(row, C.LAB).setValue(p.lab || '');
     if (p.quantity   !== undefined) sheet.getRange(row, C.QUANTITAT).setValue(Number(p.quantity));
     if (p.unit       !== undefined) sheet.getRange(row, C.UNITAT).setValue(p.unit);
     if (p.minStock   !== undefined) sheet.getRange(row, C.STOCK_MINIM).setValue(Number(p.minStock));
@@ -248,6 +250,7 @@ function rowToObj(r, entitat, cfg) {
     return {
       id:         String(r[C.ID - 1]           || ''),
       name:       String(r[C.NOM - 1]          || ''),
+      lab:        String(r[C.LAB - 1]          || ''),
       quantity:   parseFloat(r[C.QUANTITAT - 1])    || 0,
       unit:       String(r[C.UNITAT - 1]       || 'unitats'),
       minStock:   parseFloat(r[C.STOCK_MINIM - 1]) || 0,

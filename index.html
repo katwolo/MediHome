@@ -415,9 +415,26 @@ textarea.fc{height:auto;min-height:76px;padding:.75rem .875rem;resize:none}
       <div class="fg"><label>Stock mínimo</label><input class="fc" id="mm-min" type="number" min="0" placeholder="5"></div>
       <div class="fg"><label>Caducidad</label><input class="fc" id="mm-exp" type="month"></div>
     </div>
+    <div class="fg"><label>Laboratorio</label><input class="fc" id="mm-lab" type="text" placeholder="Ej: Bayer"></div>
     <div class="fg"><label>Ubicación</label><input class="fc" id="mm-loc" type="text" placeholder="Botiquín principal"></div>
     <div class="fg"><label>Categoría</label>
       <select class="fc" id="mm-cat">
+        <option value="">Seleccionar…</option>
+        <option value="adultos">Adultos</option>
+        <option value="niños">Niños</option>
+        <option value="animales">Animales</option>
+      </select>
+    </div>
+    <div class="fg" id="mm-pet-row" style="display:none"><label>Mascota</label>
+      <select class="fc" id="mm-pet">
+        <option value="">Seleccionar…</option>
+        <option value="perro">Perro</option>
+        <option value="gato">Gato</option>
+        <option value="ambos">Ambos</option>
+      </select>
+    </div>
+    <div class="fg"><label>Uso</label>
+      <select class="fc" id="mm-uso">
         <option value="">Seleccionar…</option>
         <option value="analgésico">Analgésico</option>
         <option value="antibiótico">Antibiótico</option>
@@ -428,16 +445,7 @@ textarea.fc{height:auto;min-height:76px;padding:.75rem .875rem;resize:none}
         <option value="vitaminas">Vitaminas / Suplementos</option>
         <option value="dermatológico">Dermatológico</option>
         <option value="respiratorio">Respiratorio</option>
-        <option value="animales">Animales</option>
         <option value="otro">Otro</option>
-      </select>
-    </div>
-    <div class="fg" id="mm-pet-row" style="display:none"><label>Mascota</label>
-      <select class="fc" id="mm-pet">
-        <option value="">Seleccionar…</option>
-        <option value="perro">Perro</option>
-        <option value="gato">Gato</option>
-        <option value="ambos">Ambos</option>
       </select>
     </div>
     <div class="fg"><label>Notas</label><textarea class="fc" id="mm-notes" placeholder="Instrucciones, observaciones…"></textarea></div>
@@ -684,8 +692,8 @@ const App = (() => {
   const esc = s => !s ? '' : String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
   const fmtMonth = d => {
     if (!d) return '—';
-    const [y,m] = d.split('-');
-    return ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'][+m-1] + ' ' + y;
+    const [y, m] = d.split('-');
+    return `${m}/${y}`;
   };
   const daysUntil = exp => {
     if (!exp) return null;
@@ -818,7 +826,7 @@ const App = (() => {
 
       return `<div class="med-card">
         <div class="med-card-hdr">
-          <div><div class="med-name">${esc(m.name)}</div><div class="med-fmt">${esc(m.unit)}${m.category?' · '+esc(m.category):''}</div></div>
+          <div><div class="med-name">${esc(m.name)}</div><div class="med-fmt">${esc(m.unit)}${m.lab?' · '+esc(m.lab):''}${m.usage?' · '+esc(m.usage):''}${m.category?' · '+esc(m.category):''}${m.pet&&m.category==='animales'?' ('+esc(m.pet)+')':''}</div></div>
           ${m.forSIGRE?'<span class="chip c-sigre">♻️ SIGRE</span>':''}
         </div>
         <div class="med-meta">
@@ -931,15 +939,18 @@ const App = (() => {
       document.getElementById('mm-unit').value   = m.unit;
       document.getElementById('mm-min').value    = m.minStock || '';
       document.getElementById('mm-exp').value    = m.expiryDate || '';
+      document.getElementById('mm-lab').value    = m.lab || '';
       document.getElementById('mm-loc').value    = m.location || '';
       document.getElementById('mm-cat').value    = m.category || '';
+      document.getElementById('mm-uso').value    = m.usage || '';
       document.getElementById('mm-notes').value  = m.notes || '';
       document.getElementById('mm-sigre').checked= !!m.forSIGRE;
       document.getElementById('mm-pet').value    = m.pet || '';
     } else {
-      ['mm-name','mm-qty','mm-min','mm-exp','mm-loc','mm-notes'].forEach(id=>document.getElementById(id).value='');
+      ['mm-name','mm-qty','mm-min','mm-exp','mm-lab','mm-loc','mm-notes'].forEach(id=>document.getElementById(id).value='');
       document.getElementById('mm-unit').value='comprimidos';
       document.getElementById('mm-cat').value='';
+      document.getElementById('mm-uso').value='';
       document.getElementById('mm-sigre').checked=false;
       document.getElementById('mm-pet').value='';
     }
@@ -962,12 +973,13 @@ const App = (() => {
       unit:      document.getElementById('mm-unit').value,
       minStock:  parseFloat(document.getElementById('mm-min').value) || 0,
       expiryDate:document.getElementById('mm-exp').value || null,
+      lab:       document.getElementById('mm-lab').value.trim(),
       location:  document.getElementById('mm-loc').value.trim(),
       category:  cat,
       pet:       cat === 'animales' ? document.getElementById('mm-pet').value : '',
+      usage:     document.getElementById('mm-uso').value,
       notes:     document.getElementById('mm-notes').value.trim(),
       forSIGRE,
-      // Preserva sigreDate si ja estava marcada; si s'activa ara, posa la data d'avui
       sigreDate: forSIGRE
         ? (existing?.sigreDate || new Date().toISOString().slice(0,10))
         : null,
@@ -979,8 +991,9 @@ const App = (() => {
       toast('Medicamento actualizado','ok');
       apiPost({ accio:'editar', entitat:'medicaments', id:med.id,
         name:med.name, quantity:med.quantity, unit:med.unit, minStock:med.minStock,
-        expiryDate:med.expiryDate, location:med.location, category:med.category,
-        pet:med.pet, notes:med.notes, forSIGRE:med.forSIGRE, sigreDate:med.sigreDate });
+        expiryDate:med.expiryDate, lab:med.lab, location:med.location,
+        category:med.category, pet:med.pet, notes:med.notes,
+        forSIGRE:med.forSIGRE, sigreDate:med.sigreDate });
     } else {
       S.meds.push(med);
       toast('Medicamento añadido','ok');
@@ -1242,11 +1255,11 @@ const App = (() => {
       return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
     };
     S.meds = [
-      {id:uid(),name:'Paracetamol 500mg',quantity:20,unit:'comprimidos',minStock:5,expiryDate:mo(6),location:'Botiquín principal',category:'analgésico',notes:'',forSIGRE:false,createdAt:new Date().toISOString()},
-      {id:uid(),name:'Ibuprofeno 400mg',quantity:3,unit:'comprimidos',minStock:5,expiryDate:mo(1),location:'Armario baño',category:'antiinflamatorio',notes:'Con comida',forSIGRE:false,createdAt:new Date().toISOString()},
-      {id:uid(),name:'Omeprazol 20mg',quantity:28,unit:'cápsulas',minStock:7,expiryDate:mo(8),location:'Botiquín principal',category:'digestivo',notes:'En ayunas',forSIGRE:false,createdAt:new Date().toISOString()},
-      {id:uid(),name:'Vitamina D3',quantity:0,unit:'cápsulas',minStock:10,expiryDate:mo(12),location:'Nevera',category:'vitaminas',notes:'',forSIGRE:false,createdAt:new Date().toISOString()},
-      {id:uid(),name:'Loratadina 10mg',quantity:8,unit:'comprimidos',minStock:3,expiryDate:mo(-2),location:'Botiquín principal',category:'antialérgico',notes:'',forSIGRE:true,sigreDate:new Date().toISOString().slice(0,10),createdAt:new Date().toISOString()},
+      {id:uid(),name:'Paracetamol 500mg',quantity:20,unit:'comprimidos',minStock:5,expiryDate:mo(6),lab:'',location:'Botiquín principal',category:'adultos',usage:'analgésico',pet:'',notes:'',forSIGRE:false,createdAt:new Date().toISOString()},
+      {id:uid(),name:'Ibuprofeno 400mg',quantity:3,unit:'comprimidos',minStock:5,expiryDate:mo(1),lab:'',location:'Armario baño',category:'adultos',usage:'antiinflamatorio',pet:'',notes:'Con comida',forSIGRE:false,createdAt:new Date().toISOString()},
+      {id:uid(),name:'Omeprazol 20mg',quantity:28,unit:'cápsulas',minStock:7,expiryDate:mo(8),lab:'',location:'Botiquín principal',category:'adultos',usage:'digestivo',pet:'',notes:'En ayunas',forSIGRE:false,createdAt:new Date().toISOString()},
+      {id:uid(),name:'Vitamina D3',quantity:0,unit:'cápsulas',minStock:10,expiryDate:mo(12),lab:'',location:'Nevera',category:'adultos',usage:'vitaminas',pet:'',notes:'',forSIGRE:false,createdAt:new Date().toISOString()},
+      {id:uid(),name:'Loratadina 10mg',quantity:8,unit:'comprimidos',minStock:3,expiryDate:mo(-2),lab:'',location:'Botiquín principal',category:'adultos',usage:'antialérgico',pet:'',notes:'',forSIGRE:true,sigreDate:new Date().toISOString().slice(0,10),createdAt:new Date().toISOString()},
     ];
     const omep = S.meds[2];
     S.treats = [{id:uid(),name:'Protección gástrica',medicineId:omep.id,medicineName:omep.name,doseQty:1,frequency:'once',instructions:'En ayunas, por la mañana',startDate:new Date().toISOString().slice(0,10),endDate:null,active:true,createdAt:new Date().toISOString()}];
