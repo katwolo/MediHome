@@ -39,12 +39,12 @@ const CFG = {
     SHEET_NAME: 'Medicaments',
     COLS: {
       ID: 1, NOM: 2, QUANTITAT: 3, UNITAT: 4, STOCK_MINIM: 5,
-      CADUCITAT: 6, UBICACIO: 7, CATEGORIA: 8, NOTES: 9,
-      SIGRE: 10, DATA_SIGRE: 11, DATA_CREACIO: 12, ESTAT: 13,
+      CADUCITAT: 6, UBICACIO: 7, CATEGORIA: 8, MASCOTA: 9, NOTES: 10,
+      SIGRE: 11, DATA_SIGRE: 12, DATA_CREACIO: 13, ESTAT: 14,
     },
-    TOTAL_COLS: 13,
+    TOTAL_COLS: 14,
     HEADERS: ['ID','Nom','Quantitat','Unitat','StockMinim','Caducitat',
-              'Ubicacio','Categoria','Notes','SIGRE','DataSIGRE','DataCreacio','Estat'],
+              'Ubicacio','Categoria','Mascota','Notes','SIGRE','DataSIGRE','DataCreacio','Estat'],
   },
   tractaments: {
     SHEET_NAME: 'Tractaments',
@@ -134,6 +134,7 @@ function crear(sheet, p, entitat, cfg) {
     fila[C.CADUCITAT - 1]    = p.expiryDate     || '';
     fila[C.UBICACIO - 1]     = p.location       || '';
     fila[C.CATEGORIA - 1]    = p.category       || '';
+    fila[C.MASCOTA - 1]      = p.pet            || '';
     fila[C.NOTES - 1]        = p.notes          || '';
     fila[C.SIGRE - 1]        = p.forSIGRE       ? 'si' : 'no';
     fila[C.DATA_SIGRE - 1]   = p.sigreDate      || '';
@@ -189,6 +190,7 @@ function editar(sheet, p, entitat, cfg) {
     if (p.expiryDate !== undefined) sheet.getRange(row, C.CADUCITAT).setValue(p.expiryDate || '');
     if (p.location   !== undefined) sheet.getRange(row, C.UBICACIO).setValue(p.location || '');
     if (p.category   !== undefined) sheet.getRange(row, C.CATEGORIA).setValue(p.category || '');
+    if (p.pet        !== undefined) sheet.getRange(row, C.MASCOTA).setValue(p.pet || '');
     if (p.notes      !== undefined) sheet.getRange(row, C.NOTES).setValue(p.notes || '');
     if (p.forSIGRE   !== undefined) sheet.getRange(row, C.SIGRE).setValue(p.forSIGRE ? 'si' : 'no');
     if (p.sigreDate  !== undefined) sheet.getRange(row, C.DATA_SIGRE).setValue(p.sigreDate || '');
@@ -252,6 +254,7 @@ function rowToObj(r, entitat, cfg) {
       expiryDate: String(r[C.CADUCITAT - 1]    || '') || null,
       location:   String(r[C.UBICACIO - 1]     || ''),
       category:   String(r[C.CATEGORIA - 1]    || ''),
+      pet:        String(r[C.MASCOTA - 1]      || ''),
       notes:      String(r[C.NOTES - 1]        || ''),
       forSIGRE:   String(r[C.SIGRE - 1]).toLowerCase() === 'si',
       sigreDate:  String(r[C.DATA_SIGRE - 1]   || '') || null,

@@ -428,7 +428,16 @@ textarea.fc{height:auto;min-height:76px;padding:.75rem .875rem;resize:none}
         <option value="vitaminas">Vitaminas / Suplementos</option>
         <option value="dermatológico">Dermatológico</option>
         <option value="respiratorio">Respiratorio</option>
+        <option value="animales">Animales</option>
         <option value="otro">Otro</option>
+      </select>
+    </div>
+    <div class="fg" id="mm-pet-row" style="display:none"><label>Mascota</label>
+      <select class="fc" id="mm-pet">
+        <option value="">Seleccionar…</option>
+        <option value="perro">Perro</option>
+        <option value="gato">Gato</option>
+        <option value="ambos">Ambos</option>
       </select>
     </div>
     <div class="fg"><label>Notas</label><textarea class="fc" id="mm-notes" placeholder="Instrucciones, observaciones…"></textarea></div>
@@ -926,12 +935,16 @@ const App = (() => {
       document.getElementById('mm-cat').value    = m.category || '';
       document.getElementById('mm-notes').value  = m.notes || '';
       document.getElementById('mm-sigre').checked= !!m.forSIGRE;
+      document.getElementById('mm-pet').value    = m.pet || '';
     } else {
       ['mm-name','mm-qty','mm-min','mm-exp','mm-loc','mm-notes'].forEach(id=>document.getElementById(id).value='');
       document.getElementById('mm-unit').value='comprimidos';
       document.getElementById('mm-cat').value='';
       document.getElementById('mm-sigre').checked=false;
+      document.getElementById('mm-pet').value='';
     }
+    document.getElementById('mm-pet-row').style.display =
+      document.getElementById('mm-cat').value === 'animales' ? '' : 'none';
     document.getElementById('m-med').classList.add('active');
     document.getElementById('mm-name').focus();
   }
@@ -942,6 +955,7 @@ const App = (() => {
     if (!name || isNaN(qty)) { toast('Nombre y cantidad son obligatorios','err'); return; }
     const existing = S.editMedId ? S.meds.find(x=>x.id===S.editMedId) : null;
     const forSIGRE = document.getElementById('mm-sigre').checked;
+    const cat = document.getElementById('mm-cat').value;
     const med = {
       id: S.editMedId || uid(),
       name, quantity: qty,
@@ -949,7 +963,8 @@ const App = (() => {
       minStock:  parseFloat(document.getElementById('mm-min').value) || 0,
       expiryDate:document.getElementById('mm-exp').value || null,
       location:  document.getElementById('mm-loc').value.trim(),
-      category:  document.getElementById('mm-cat').value,
+      category:  cat,
+      pet:       cat === 'animales' ? document.getElementById('mm-pet').value : '',
       notes:     document.getElementById('mm-notes').value.trim(),
       forSIGRE,
       // Preserva sigreDate si ja estava marcada; si s'activa ara, posa la data d'avui
@@ -965,7 +980,7 @@ const App = (() => {
       apiPost({ accio:'editar', entitat:'medicaments', id:med.id,
         name:med.name, quantity:med.quantity, unit:med.unit, minStock:med.minStock,
         expiryDate:med.expiryDate, location:med.location, category:med.category,
-        notes:med.notes, forSIGRE:med.forSIGRE, sigreDate:med.sigreDate });
+        pet:med.pet, notes:med.notes, forSIGRE:med.forSIGRE, sigreDate:med.sigreDate });
     } else {
       S.meds.push(med);
       toast('Medicamento añadido','ok');
@@ -1246,6 +1261,10 @@ const App = (() => {
     // Medicine
     document.getElementById('mm-cancel').onclick = () => closeM('m-med');
     document.getElementById('mm-save').onclick    = saveMed;
+    document.getElementById('mm-cat').addEventListener('change', () => {
+      document.getElementById('mm-pet-row').style.display =
+        document.getElementById('mm-cat').value === 'animales' ? '' : 'none';
+    });
 
     // Treatment
     document.getElementById('mt-cancel').onclick = () => closeM('m-treat');
