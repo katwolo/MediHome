@@ -345,11 +345,7 @@ textarea.fc{height:auto;min-height:76px;padding:.75rem .875rem;resize:none}
         <div class="set-body"><div class="set-ttl">Importar datos</div><div class="set-desc">Carga medicamentos desde CSV o JSON</div></div>
         <span class="set-arr">›</span>
       </div>
-      <div class="set-item" id="s-template">
-        <div class="set-ico" style="background:#F0FDF4">📋</div>
-        <div class="set-body"><div class="set-ttl">Plantilla CSV</div><div class="set-desc">Descarga la plantilla para importar</div></div>
-        <span class="set-arr">›</span>
-      </div>
+
     </div>
 
     <div class="set-grp">
@@ -1249,12 +1245,6 @@ const App = (() => {
     dl('medihome-inventario.csv',[hdr,...rows].join('\n'),'text/csv');
     toast('CSV exportado','ok');
   }
-  function downloadTemplate() {
-    dl('plantilla-medihome.csv',
-      'nombre,cantidad,unidad,stock_minimo,caducidad,ubicacion,categoria,notas\nParacetamol 500mg,20,comprimidos,5,2026-06,Botiquín principal,analgésico,Tomar con agua\nIbuprofeno 400mg,12,comprimidos,4,2025-12,Armario baño,antiinflamatorio,\nAmoxicilina 500mg,15,cápsulas,0,2025-08,Nevera,antibiótico,Refrigerado',
-      'text/csv');
-    toast('Plantilla descargada','ok');
-  }
   const cv = s => !s?'':(s.includes(',')||s.includes('"'))?`"${s.replace(/"/g,'""')}"`:s;
   const dl = (name,content,mime) => {
     const a = Object.assign(document.createElement('a'),{href:URL.createObjectURL(new Blob([content],{type:mime})),download:name});
@@ -1374,7 +1364,6 @@ const App = (() => {
     // Settings
     document.getElementById('s-export-json').onclick = exportJSON;
     document.getElementById('s-export-csv').onclick  = exportCSV;
-    document.getElementById('s-template').onclick    = downloadTemplate;
     document.getElementById('s-import').onclick = () => {
       document.getElementById('imp-file').value='';
       document.getElementById('imp-merge').checked=true;

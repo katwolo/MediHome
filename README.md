@@ -33,7 +33,6 @@ Aplicación web móvil para gestionar el botiquín del hogar. Funciona directame
 ### Configuración
 - Exportar inventario a **JSON** (copia de seguridad completa) o **CSV**
 - Importar desde JSON o CSV (con opción de fusionar o reemplazar)
-- Descargar plantilla CSV de ejemplo
 - Conexión con Google Sheets (ver sección siguiente)
 - Botón para cargar datos de ejemplo
 
@@ -99,11 +98,17 @@ ID | Nom | MedicamentID | MedicamentNom | DosisQuantitat | Frequencia | Instrucc
 ID | TractamentID | MedicamentID | MedicamentNom | Quantitat | Data | Hora | Notes | DataCreacio | Estat
 ```
 
-### Crear las cabeceras automáticamente
+### Crear el Google Sheet desde cero con `initSheets()`
 
-Desde el editor de Apps Script: **Ejecutar → `initSheets()`**. Esto crea las tres pestañas con las cabeceras y formato correctos si no existen todavía.
+La forma más sencilla de preparar la hoja es dejar que el propio script la construya:
 
-> Si las pestañas ya tienen datos, `initSheets()` no las modifica. En ese caso hay que añadir las columnas manualmente respetando el orden indicado.
+1. Crea un **Google Sheet vacío** (sin pestañas con datos)
+2. Ve a **Extensiones → Apps Script**, pega el contenido de `Code.gs` y guarda
+3. En el editor de Apps Script, en la barra superior selecciona la función **`initSheets`** y pulsa **Ejecutar**
+4. Acepta los permisos que te pida Google
+5. El script crea automáticamente las tres pestañas (`Medicaments`, `Tractaments`, `Dosis`) con las cabeceras correctas, formato oscuro en la fila 1 y la primera fila fija
+
+> `initSheets()` solo crea cabeceras si la celda A1 de cada pestaña está vacía. Si ya tienes datos, no toca nada — tendrás que ajustar las columnas manualmente según la estructura indicada arriba.
 
 ### Cómo funciona la sincronización
 
