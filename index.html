@@ -31,8 +31,8 @@
 }
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html{font-size:16px}
-body{font-family:-apple-system,BlinkMacSystemFont,'Inter',system-ui,sans-serif;background:var(--gray-100);color:var(--gray-800);min-height:100vh;-webkit-font-smoothing:antialiased}
-#app{max-width:500px;margin:0 auto;min-height:100vh;background:var(--gray-100);position:relative}
+body{font-family:-apple-system,BlinkMacSystemFont,'Inter',system-ui,sans-serif;background:#f5f7fa;color:var(--gray-800);min-height:100vh;-webkit-font-smoothing:antialiased}
+#app{max-width:500px;margin:0 auto;min-height:100vh;background:#f5f7fa;position:relative}
 
 /* HEADER */
 .hdr{position:fixed;top:0;left:50%;transform:translateX(-50%);width:100%;max-width:500px;height:var(--hdr-h);background:rgba(255,255,255,.94);backdrop-filter:blur(20px);border-bottom:1px solid var(--gray-200);display:flex;align-items:center;justify-content:space-between;padding:0 1.25rem;z-index:100}
@@ -99,13 +99,16 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Inter',system-ui,sans-serif;b
 .al-item.success .al-badge{background:var(--success-light);color:#065F46}
 
 /* MEDICINE CARDS */
-.med-card{background:var(--white);border-radius:16px;padding:1.125rem 1.25rem;box-shadow:0 2px 8px rgba(0,0,0,.07);border:1px solid var(--gray-200)}
+.med-card{background:var(--white);border-radius:16px;padding:1.125rem 1.25rem;box-shadow:0 2px 12px rgba(0,0,0,.06);border:1px solid rgba(0,0,0,.06)}
 .med-card+.med-card{margin-top:.75rem}
-.med-card-hdr{display:flex;align-items:flex-start;justify-content:space-between;gap:.5rem}
-.med-name{font-size:1.0625rem;font-weight:700;color:var(--gray-900);letter-spacing:-.02em}
-.med-fmt{font-size:.8125rem;color:var(--gray-500);margin-top:.2rem}
+.med-card-hdr{display:flex;align-items:center;justify-content:space-between;gap:.5rem}
+.med-name{font-size:1.0625rem;font-weight:700;color:var(--gray-900);letter-spacing:-.02em;line-height:1.3}
+.med-tags{display:flex;gap:.3rem;flex-wrap:wrap;margin-top:.45rem}
+.med-tag{display:inline-flex;align-items:center;font-size:.6875rem;font-weight:600;padding:.2rem .6rem;border-radius:20px;background:var(--gray-100);color:var(--gray-600)}
+.med-tag-blue{background:#EFF6FF;color:#1D4ED8}
+.med-tag-green{background:#ECFDF5;color:#065F46}
 .med-meta{display:flex;align-items:center;gap:.4rem;margin-top:.75rem;flex-wrap:wrap}
-.med-actions{display:flex;gap:.5rem;margin-top:.875rem;padding-top:.875rem;border-top:1px solid var(--gray-100);flex-wrap:wrap}
+.med-actions{display:flex;gap:.5rem;margin-top:.875rem;padding-top:.875rem;border-top:1px solid #f5f7fa;flex-wrap:wrap}
 
 /* CHIPS */
 .chip{display:inline-flex;align-items:center;gap:.3rem;font-size:.75rem;font-weight:500;padding:.275rem .65rem;border-radius:20px}
@@ -467,7 +470,14 @@ textarea.fc{height:auto;min-height:76px;padding:.75rem .875rem;resize:none}
     <div class="modal-handle"></div>
     <div class="modal-ttl" id="m-treat-ttl">Nuevo tratamiento</div>
     <div class="fg"><label>Nombre *</label><input class="fc" id="mt-name" type="text" placeholder="Ej: Tensión arterial"></div>
-    <div class="fg"><label>Medicamento *</label><select class="fc" id="mt-med"><option value="">Seleccionar medicamento…</option></select></div>
+    <div class="fg">
+      <label>Medicamento *</label>
+      <div class="search" style="margin-bottom:.5rem;position:relative">
+        <span class="search-ico">🔍</span>
+        <input class="fc" type="text" id="mt-med-search" placeholder="Buscar medicamento…" autocomplete="off" style="padding-left:2.5rem">
+      </div>
+      <select class="fc" id="mt-med"><option value="">Seleccionar medicamento…</option></select>
+    </div>
     <div class="f-row">
       <div class="fg"><label>Dosis por toma</label><input class="fc" id="mt-dqty" type="number" min="0.5" step="0.5" value="1"></div>
       <div class="fg"><label>Frecuencia</label>
@@ -856,8 +866,13 @@ const App = (() => {
 
       return `<div class="med-card">
         <div class="med-card-hdr">
-          <div><div class="med-name">${esc(m.name)}</div><div class="med-fmt">${esc(m.unit)}${m.usage?' · '+esc(m.usage):''}</div></div>
-          ${m.forSIGRE?'<span class="chip c-sigre" style="flex-shrink:0">♻️ SIGRE</span>':''}
+          <div class="med-name">${esc(m.name)}</div>
+          ${m.forSIGRE?'<span class="med-tag" style="flex-shrink:0;background:#FEF3C7;color:#92400E;white-space:nowrap">♻️ SIGRE</span>':''}
+        </div>
+        <div class="med-tags">
+          <span class="med-tag">${esc(m.unit)}</span>
+          ${m.usage?`<span class="med-tag med-tag-blue">${esc(m.usage)}</span>`:''}
+          ${m.category?`<span class="med-tag med-tag-green">${esc(m.category)}${m.pet&&m.category==='animales'?' · '+esc(m.pet):''}</span>`:''}
         </div>
         <div class="med-meta">
           <span class="chip c-stock ${ss}">📦 ${m.quantity} ${esc(m.unit)}</span>
@@ -1056,6 +1071,7 @@ const App = (() => {
       document.getElementById('mt-start').value = new Date().toISOString().slice(0,10);
       document.getElementById('mt-active').checked = true;
     }
+    document.getElementById('mt-med-search').value = '';
     document.getElementById('m-treat').classList.add('active');
   }
 
@@ -1312,6 +1328,14 @@ const App = (() => {
     // Treatment
     document.getElementById('mt-cancel').onclick = () => closeM('m-treat');
     document.getElementById('mt-save').onclick    = saveTreat;
+    document.getElementById('mt-med-search').addEventListener('input', () => {
+      const q = document.getElementById('mt-med-search').value.toLowerCase();
+      const current = document.getElementById('mt-med').value;
+      const meds = S.meds.filter(m => !m.forSIGRE && m.name.toLowerCase().includes(q));
+      document.getElementById('mt-med').innerHTML =
+        '<option value="">Seleccionar medicamento…</option>' +
+        meds.map(m => `<option value="${m.id}"${m.id===current?' selected':''}>${esc(m.name)} (${m.quantity} ${m.unit})</option>`).join('');
+    });
 
     // Dose
     document.getElementById('md-cancel').onclick = () => closeM('m-dose');
