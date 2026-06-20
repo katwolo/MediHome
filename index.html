@@ -826,8 +826,11 @@ const App = (() => {
 
       return `<div class="med-card">
         <div class="med-card-hdr">
-          <div><div class="med-name">${esc(m.name)}</div><div class="med-fmt">${esc(m.unit)}${m.usage?' · '+esc(m.usage):''}${m.category?' · '+esc(m.category):''}${m.pet&&m.category==='animales'?' ('+esc(m.pet)+')':''}</div></div>
-          ${m.forSIGRE?'<span class="chip c-sigre">♻️ SIGRE</span>':''}
+          <div><div class="med-name">${esc(m.name)}</div><div class="med-fmt">${esc(m.unit)}${m.usage?' · '+esc(m.usage):''}</div></div>
+          <div style="display:flex;gap:.375rem;flex-wrap:wrap;justify-content:flex-end">
+            ${m.category?`<span class="chip" style="font-size:.7rem;padding:.2rem .5rem;background:var(--gray-100);color:var(--gray-600)">${esc(m.category)}${m.pet&&m.category==='animales'?' · '+esc(m.pet):''}</span>`:''}
+            ${m.forSIGRE?'<span class="chip c-sigre">♻️ SIGRE</span>':''}
+          </div>
         </div>
         <div class="med-meta">
           <span class="chip c-stock ${ss}">📦 ${m.quantity} ${esc(m.unit)}</span>
