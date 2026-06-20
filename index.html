@@ -727,15 +727,24 @@ const App = (() => {
   // ── Utils ─────────────────────────────────────────────────
   const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2,7);
   const esc = s => !s ? '' : String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  const parseYM = d => {
+    if (!d) return null;
+    const s = String(d).trim();
+    let x = s.match(/^(\d{4})-(\d{2})/);
+    if (x) return { y: +x[1], mo: +x[2] };
+    x = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+    if (x) return { y: +x[3], mo: +x[2] };
+    return null;
+  };
   const fmtMonth = d => {
-    if (!d) return '—';
-    const [y, m] = d.split('-');
-    return `${m}/${y}`;
+    const p = parseYM(d);
+    if (!p) return '—';
+    return `${String(p.mo).padStart(2,'0')}/${p.y}`;
   };
   const daysUntil = exp => {
-    if (!exp) return null;
-    const [y,m] = exp.split('-').map(Number);
-    return Math.floor((new Date(y,m,0) - new Date().setHours(0,0,0,0)) / 86400000);
+    const p = parseYM(exp);
+    if (!p) return null;
+    return Math.floor((new Date(p.y, p.mo, 0) - new Date().setHours(0,0,0,0)) / 86400000);
   };
   const expStatus = med => {
     const d = daysUntil(med.expiryDate);

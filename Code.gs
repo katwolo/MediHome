@@ -242,6 +242,25 @@ function trobaFila(sheet, id, cfg) {
   return null;
 }
 
+// ── dateToYYYYMM ──────────────────────────────────────────────
+// Normalizes any date value from Sheets to YYYY-MM string.
+// Handles: Date objects, "DD/MM/YYYY", "YYYY-MM-DD", "YYYY-MM".
+function dateToYYYYMM(v) {
+  if (!v) return '';
+  if (v instanceof Date) {
+    const y = v.getFullYear();
+    const mo = String(v.getMonth() + 1).padStart(2, '0');
+    return `${y}-${mo}`;
+  }
+  const s = String(v).trim();
+  if (!s) return '';
+  const ddmm = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+  if (ddmm) return `${ddmm[3]}-${ddmm[2].padStart(2, '0')}`;
+  const iso = s.match(/^(\d{4})-(\d{2})/);
+  if (iso) return `${iso[1]}-${iso[2]}`;
+  return s;
+}
+
 // ── rowToObj ──────────────────────────────────────────────────
 function rowToObj(r, entitat, cfg) {
   const C = (cfg || CFG[entitat]).COLS;
@@ -254,7 +273,7 @@ function rowToObj(r, entitat, cfg) {
       quantity:   parseFloat(r[C.QUANTITAT - 1])    || 0,
       unit:       String(r[C.UNITAT - 1]       || 'unitats'),
       minStock:   parseFloat(r[C.STOCK_MINIM - 1]) || 0,
-      expiryDate: String(r[C.CADUCITAT - 1]    || '') || null,
+      expiryDate: dateToYYYYMM(r[C.CADUCITAT - 1]) || null,
       location:   String(r[C.UBICACIO - 1]     || ''),
       category:   String(r[C.CATEGORIA - 1]    || ''),
       pet:        String(r[C.MASCOTA - 1]      || ''),
