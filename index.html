@@ -574,6 +574,63 @@ const App = (() => {
     confirmCb: null, gsUrl: '',
   };
 
+  // ── API LAYER ────────────────────────────────────────────
+  const API = {
+    url: '',
+    async get(entitat, filtre = 'tots') {
+      if (!this.url) return null;
+      try {
+        const res = await fetch(`${this.url}?entitat=${entitat}&filtre=${filtre}`, { redirect: 'follow' });
+        const d = await res.json();
+        return d.ok ? d.registres : null;
+      } catch { return null; }
+    },
+    async post(payload) {
+      if (!this.url) return { ok: true };
+      try {
+        const res = await fetch(this.url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify(payload),
+          redirect: 'follow',
+        });
+        return await res.json();
+      } catch (err) { return { ok: false, error: err.message }; }
+    },
+    async loadAll() {
+      const [meds, treats, doses] = await Promise.all([
+        this.get('medicaments', 'tots'),
+        this.get('tractaments', 'tots'),
+        this.get('dosis', 'tots'),
+      ]);
+      return { meds, treats, doses };
+    },
+  };
+
+  // Crida API en background; mostra toast si falla
+  function apiPost(payload) {
+    if (!API.url) return;
+    API.post(payload).then(r => {
+      if (r && !r.ok) toast('⚠️ Sync: ' + (r.error || 'Error de connexió'), 'warn');
+    });
+  }
+
+  async function syncFromAPI() {
+    toast('Sincronizando con Google Sheets…');
+    const { meds, treats, doses } = await API.loadAll();
+    let updated = false;
+    if (meds   !== null) { S.meds   = meds;   updated = true; }
+    if (treats !== null) { S.treats = treats; updated = true; }
+    if (doses  !== null) { S.doses  = doses;  updated = true; }
+    if (updated) {
+      save(); updateSIGREBadge(); render(S.section);
+      toast('Datos sincronizados ✓', 'ok');
+    } else {
+      toast('No se pudieron cargar datos de la API', 'warn');
+    }
+    return updated;
+  }
+
   // ── Persist ──────────────────────────────────────────────
   function load() {
     S.meds    = JSON.parse(localStorage.getItem('mh_meds')   || '[]');
@@ -858,6 +915,8 @@ const App = (() => {
     const name = document.getElementById('mm-name').value.trim();
     const qty  = parseFloat(document.getElementById('mm-qty').value);
     if (!name || isNaN(qty)) { toast('Nombre y cantidad son obligatorios','err'); return; }
+    const existing = S.editMedId ? S.meds.find(x=>x.id===S.editMedId) : null;
+    const forSIGRE = document.getElementById('mm-sigre').checked;
     const med = {
       id: S.editMedId || uid(),
       name, quantity: qty,
@@ -867,17 +926,25 @@ const App = (() => {
       location:  document.getElementById('mm-loc').value.trim(),
       category:  document.getElementById('mm-cat').value,
       notes:     document.getElementById('mm-notes').value.trim(),
-      forSIGRE:  document.getElementById('mm-sigre').checked,
-      createdAt: new Date().toISOString(),
+      forSIGRE,
+      // Preserva sigreDate si ja estava marcada; si s'activa ara, posa la data d'avui
+      sigreDate: forSIGRE
+        ? (existing?.sigreDate || new Date().toISOString().slice(0,10))
+        : null,
+      createdAt: existing?.createdAt || new Date().toISOString(),
     };
     if (S.editMedId) {
       const i = S.meds.findIndex(x=>x.id===S.editMedId);
-      med.createdAt = S.meds[i].createdAt;
       S.meds[i] = med;
       toast('Medicamento actualizado','ok');
+      apiPost({ accio:'editar', entitat:'medicaments', id:med.id,
+        name:med.name, quantity:med.quantity, unit:med.unit, minStock:med.minStock,
+        expiryDate:med.expiryDate, location:med.location, category:med.category,
+        notes:med.notes, forSIGRE:med.forSIGRE, sigreDate:med.sigreDate });
     } else {
       S.meds.push(med);
       toast('Medicamento añadido','ok');
+      apiPost({ accio:'crear', entitat:'medicaments', ...med });
     }
     save(); closeM('m-med'); renderInv(); updateSIGREBadge();
   }
@@ -932,9 +999,14 @@ const App = (() => {
       t.createdAt = S.treats[i].createdAt;
       S.treats[i] = t;
       toast('Tratamiento actualizado','ok');
+      apiPost({ accio:'editar', entitat:'tractaments', id:t.id,
+        name:t.name, medicineId:t.medicineId, medicineName:t.medicineName,
+        doseQty:t.doseQty, frequency:t.frequency, instructions:t.instructions,
+        startDate:t.startDate, endDate:t.endDate, active:t.active });
     } else {
       S.treats.push(t);
       toast('Tratamiento creado','ok');
+      apiPost({ accio:'crear', entitat:'tractaments', ...t });
     }
     save(); closeM('m-treat'); renderTreats();
   }
@@ -967,14 +1039,18 @@ const App = (() => {
       if (med.quantity < qty) { toast('Stock insuficiente para esta dosis','warn'); return; }
       med.quantity = parseFloat((med.quantity - qty).toFixed(2));
     }
-    S.doses.push({
+    const dose = {
       id: uid(), treatmentId: t.id, medicineId: t.medicineId,
       medicineName: t.medicineName, quantity: qty, date, time,
       notes: document.getElementById('md-notes').value.trim(),
       createdAt: new Date().toISOString(),
-    });
+    };
+    S.doses.push(dose);
     save(); closeM('m-dose');
     toast(`✓ Dosis registrada${med?' · '+med.quantity+' '+med.unit+' restantes':''}`, 'ok');
+    // Sync: nova dosi + nou stock del medicament
+    apiPost({ accio:'crear', entitat:'dosis', ...dose });
+    if (med) apiPost({ accio:'editar', entitat:'medicaments', id:med.id, quantity:med.quantity });
     renderTreats();
   }
 
@@ -994,6 +1070,7 @@ const App = (() => {
         S.meds = S.meds.filter(x=>x.id!==id);
         save(); renderInv(); updateSIGREBadge();
         toast('Medicamento eliminado');
+        apiPost({ accio:'eliminar', entitat:'medicaments', id });
       });
     } else {
       const t = S.treats.find(x=>x.id===id);
@@ -1002,6 +1079,7 @@ const App = (() => {
         S.doses  = S.doses.filter(d=>d.treatmentId!==id);
         save(); renderTreats();
         toast('Tratamiento eliminado');
+        apiPost({ accio:'eliminar', entitat:'tractaments', id });
       });
     }
   }
@@ -1014,6 +1092,7 @@ const App = (() => {
     m.sigreDate = m.forSIGRE ? new Date().toISOString().slice(0,10) : null;
     save(); updateSIGREBadge();
     toast(m.forSIGRE ? `${m.name} marcado para SIGRE` : `${m.name} retirado de SIGRE`);
+    apiPost({ accio:'editar', entitat:'medicaments', id, forSIGRE:m.forSIGRE, sigreDate:m.sigreDate });
     if (S.section==='botiquin') renderInv();
     else if (S.section==='sigre') renderSIGRE();
   }
@@ -1023,12 +1102,17 @@ const App = (() => {
       S.meds = S.meds.filter(x=>x.id!==id);
       save(); renderSIGRE(); updateSIGREBadge();
       toast('Entregado y eliminado del inventario','ok');
+      apiPost({ accio:'eliminar', entitat:'medicaments', id });
     },'Confirmar entrega');
   }
 
   function toggleActive(id, val) {
     const t = S.treats.find(x=>x.id===id);
-    if (t) { t.active = val; save(); toast(val?'Activado':'Pausado'); renderTreats(); }
+    if (t) {
+      t.active = val; save();
+      toast(val?'Activado':'Pausado'); renderTreats();
+      apiPost({ accio:'editar', entitat:'tractaments', id, active:val });
+    }
   }
 
   // ── SIGRE REPORT ──────────────────────────────────────────
@@ -1111,7 +1195,7 @@ const App = (() => {
 
   // ── SEED DATA ─────────────────────────────────────────────
   function seed() {
-    if (S.meds.length) return;
+    if (S.meds.length || S.gsUrl) return; // no semar si hi ha API o dades locals
     const now = new Date();
     const mo = (delta) => {
       const d = new Date(now); d.setMonth(d.getMonth()+delta);
@@ -1184,15 +1268,22 @@ const App = (() => {
       const reader = new FileReader();
       reader.onload = e => {
         const content = e.target.result;
+        const prevLen = S.meds.length;
         if (file.name.endsWith('.json')) {
-          if (importJSON(content, merge)) { toast(`Datos importados correctamente`,'ok'); closeM('m-import'); updateSIGREBadge(); render(S.section); }
-          else toast('JSON inválido','err');
+          if (importJSON(content, merge)) {
+            toast(`Datos importados correctamente`,'ok');
+            closeM('m-import'); updateSIGREBadge(); render(S.section);
+            // Push nous registres a l'API
+            if (API.url) S.meds.slice(prevLen).forEach(m => apiPost({ accio:'crear', entitat:'medicaments', ...m }));
+          } else { toast('JSON inválido','err'); }
         } else {
           const n = importCSV(content, merge);
           if (n === -1) { toast('Columna "nombre" no encontrada','err'); return; }
           if (n === 0)  { toast('Sin datos en el archivo','err'); return; }
-          toast(`${n} medicamentos importados`,'ok');
+          toast(`${n} medicamentos importados${API.url ? ' · Sincronizando…' : ''}`, 'ok');
           closeM('m-import'); updateSIGREBadge(); renderInv();
+          // Push nous registres a l'API
+          if (API.url) S.meds.slice(prevLen).forEach(m => apiPost({ accio:'crear', entitat:'medicaments', ...m }));
         }
       };
       reader.readAsText(file);
@@ -1204,20 +1295,19 @@ const App = (() => {
       document.getElementById('m-gsheets').classList.add('active');
     };
     document.getElementById('gs-cancel').onclick = () => closeM('m-gsheets');
-    document.getElementById('gs-save').onclick   = () => {
-      S.gsUrl = document.getElementById('gs-url').value.trim();
-      localStorage.setItem('mh_gs', S.gsUrl);
-      document.getElementById('gsheets-status').textContent = S.gsUrl ? 'URL configurada ✓' : 'URL no configurada';
-      document.getElementById('s-sync').style.display = S.gsUrl ? 'flex' : 'none';
+    document.getElementById('gs-save').onclick   = async () => {
+      const newUrl = document.getElementById('gs-url').value.trim();
+      S.gsUrl = newUrl;
+      API.url = newUrl;
+      localStorage.setItem('mh_gs', newUrl);
+      document.getElementById('gsheets-status').textContent = newUrl ? 'URL configurada ✓' : 'URL no configurada';
+      document.getElementById('s-sync').style.display = newUrl ? 'flex' : 'none';
       closeM('m-gsheets'); toast('URL guardada','ok');
+      // Carrega dades de l'API immediatament si s'acaba de configurar
+      if (newUrl) await syncFromAPI();
     };
-    document.getElementById('s-sync').onclick = async () => {
-      if (!S.gsUrl) return;
-      try {
-        const r = await fetch(S.gsUrl,{method:'POST',body:JSON.stringify({medicines:S.meds,treatments:S.treats}),headers:{'Content-Type':'application/json'}});
-        r.ok ? toast('Sincronizado con Google Sheets','ok') : toast('Error al sincronizar','err');
-      } catch { toast('Error de conexión','err'); }
-    };
+    // s-sync: descarrega totes les dades de Google Sheets (substitueix local)
+    document.getElementById('s-sync').onclick = () => syncFromAPI();
 
     // Clear
     document.getElementById('s-clear').onclick = () => confirm(
@@ -1232,15 +1322,23 @@ const App = (() => {
   }
 
   // ── INIT ──────────────────────────────────────────────────
-  function init() {
-    load(); seed(); setupEvents();
-    // Restore gsheets status
+  async function init() {
+    load();
+    setupEvents();
+    API.url = S.gsUrl;
+
     if (S.gsUrl) {
       document.getElementById('gsheets-status').textContent = 'URL configurada ✓';
       document.getElementById('s-sync').style.display = 'flex';
+      // Mostra dades locals immediatament mentre carrega l'API
+      updateSIGREBadge();
+      go('inicio');
+      await syncFromAPI(); // actualitza en segon pla
+    } else {
+      seed(); // únicament sense API URL
+      updateSIGREBadge();
+      go('inicio');
     }
-    updateSIGREBadge();
-    go('inicio');
   }
 
   return { init, openMedModal, openTreatModal, openDoseModal, delConfirm, toggleSIGRE, delivered, toggleActive, showSIGREReport };
