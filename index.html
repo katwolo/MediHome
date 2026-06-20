@@ -396,6 +396,7 @@ textarea.fc{height:auto;min-height:76px;padding:.75rem .875rem;resize:none}
     <div class="modal-handle"></div>
     <div class="modal-ttl" id="m-med-ttl">Nuevo medicamento</div>
     <div class="fg"><label>Nombre *</label><input class="fc" id="mm-name" type="text" placeholder="Ej: Paracetamol 500mg"></div>
+    <div class="fg"><label>Laboratorio</label><input class="fc" id="mm-lab" type="text" placeholder="Ej: Bayer"></div>
     <div class="f-row">
       <div class="fg"><label>Cantidad *</label><input class="fc" id="mm-qty" type="number" min="0" step="0.5" placeholder="20"></div>
       <div class="fg"><label>Unidad</label>
@@ -415,7 +416,6 @@ textarea.fc{height:auto;min-height:76px;padding:.75rem .875rem;resize:none}
       <div class="fg"><label>Stock mínimo</label><input class="fc" id="mm-min" type="number" min="0" placeholder="5"></div>
       <div class="fg"><label>Caducidad</label><input class="fc" id="mm-exp" type="month"></div>
     </div>
-    <div class="fg"><label>Laboratorio</label><input class="fc" id="mm-lab" type="text" placeholder="Ej: Bayer"></div>
     <div class="fg"><label>Ubicación</label><input class="fc" id="mm-loc" type="text" placeholder="Botiquín principal"></div>
     <div class="fg"><label>Categoría</label>
       <select class="fc" id="mm-cat">
@@ -826,7 +826,7 @@ const App = (() => {
 
       return `<div class="med-card">
         <div class="med-card-hdr">
-          <div><div class="med-name">${esc(m.name)}</div><div class="med-fmt">${esc(m.unit)}${m.lab?' · '+esc(m.lab):''}${m.usage?' · '+esc(m.usage):''}${m.category?' · '+esc(m.category):''}${m.pet&&m.category==='animales'?' ('+esc(m.pet)+')':''}</div></div>
+          <div><div class="med-name">${esc(m.name)}</div><div class="med-fmt">${esc(m.unit)}${m.usage?' · '+esc(m.usage):''}${m.category?' · '+esc(m.category):''}${m.pet&&m.category==='animales'?' ('+esc(m.pet)+')':''}</div></div>
           ${m.forSIGRE?'<span class="chip c-sigre">♻️ SIGRE</span>':''}
         </div>
         <div class="med-meta">
