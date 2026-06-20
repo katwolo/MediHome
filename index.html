@@ -99,16 +99,16 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Inter',system-ui,sans-serif;b
 .al-item.success .al-badge{background:var(--success-light);color:#065F46}
 
 /* MEDICINE CARDS */
-.med-card{background:var(--white);border-radius:14px;padding:1rem 1.125rem;box-shadow:0 1px 4px rgba(0,0,0,.07);border:1px solid var(--gray-200)}
-.med-card+.med-card{margin-top:.625rem}
+.med-card{background:var(--white);border-radius:16px;padding:1.125rem 1.25rem;box-shadow:0 2px 8px rgba(0,0,0,.07);border:1px solid var(--gray-200)}
+.med-card+.med-card{margin-top:.75rem}
 .med-card-hdr{display:flex;align-items:flex-start;justify-content:space-between;gap:.5rem}
-.med-name{font-size:1rem;font-weight:600;color:var(--gray-900);letter-spacing:-.02em}
-.med-fmt{font-size:.75rem;color:var(--gray-500);margin-top:.125rem}
-.med-meta{display:flex;align-items:center;gap:.4rem;margin-top:.625rem;flex-wrap:wrap}
-.med-actions{display:flex;gap:.4rem;margin-top:.75rem;padding-top:.75rem;border-top:1px solid var(--gray-100);flex-wrap:wrap}
+.med-name{font-size:1.0625rem;font-weight:700;color:var(--gray-900);letter-spacing:-.02em}
+.med-fmt{font-size:.8125rem;color:var(--gray-500);margin-top:.2rem}
+.med-meta{display:flex;align-items:center;gap:.4rem;margin-top:.75rem;flex-wrap:wrap}
+.med-actions{display:flex;gap:.5rem;margin-top:.875rem;padding-top:.875rem;border-top:1px solid var(--gray-100);flex-wrap:wrap}
 
 /* CHIPS */
-.chip{display:inline-flex;align-items:center;gap:.25rem;font-size:.6875rem;font-weight:500;padding:.2rem .55rem;border-radius:20px}
+.chip{display:inline-flex;align-items:center;gap:.3rem;font-size:.75rem;font-weight:500;padding:.275rem .65rem;border-radius:20px}
 .c-stock{background:var(--gray-100);color:var(--gray-600)}
 .c-stock.low{background:var(--warning-light);color:#92400E}
 .c-stock.empty{background:var(--danger-light);color:#991B1B}
@@ -127,7 +127,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Inter',system-ui,sans-serif;b
 
 /* SEARCH */
 .search{position:relative;margin-bottom:.875rem}
-.search input{width:100%;height:46px;padding:0 1rem 0 2.625rem;background:var(--white);border:1.5px solid var(--gray-200);border-radius:12px;font-size:.9375rem;color:var(--gray-800);outline:none;transition:border-color .15s;font-family:inherit}
+.search input{width:100%;height:50px;padding:0 1rem 0 2.75rem;background:var(--white);border:1.5px solid var(--gray-200);border-radius:25px;font-size:.9375rem;color:var(--gray-800);outline:none;transition:border-color .15s;font-family:inherit}
 .search input:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(37,99,235,.1)}
 .search input::placeholder{color:var(--gray-400)}
 .search-ico{position:absolute;left:.8rem;top:50%;transform:translateY(-50%);font-size:1rem;color:var(--gray-400);pointer-events:none}
@@ -857,10 +857,7 @@ const App = (() => {
       return `<div class="med-card">
         <div class="med-card-hdr">
           <div><div class="med-name">${esc(m.name)}</div><div class="med-fmt">${esc(m.unit)}${m.usage?' · '+esc(m.usage):''}</div></div>
-          <div style="display:flex;gap:.375rem;flex-wrap:wrap;justify-content:flex-end">
-            ${m.category?`<span class="chip" style="font-size:.7rem;padding:.2rem .5rem;background:var(--gray-100);color:var(--gray-600)">${esc(m.category)}${m.pet&&m.category==='animales'?' · '+esc(m.pet):''}</span>`:''}
-            ${m.forSIGRE?'<span class="chip c-sigre">♻️ SIGRE</span>':''}
-          </div>
+          ${m.forSIGRE?'<span class="chip c-sigre" style="flex-shrink:0">♻️ SIGRE</span>':''}
         </div>
         <div class="med-meta">
           <span class="chip c-stock ${ss}">📦 ${m.quantity} ${esc(m.unit)}</span>
@@ -870,7 +867,7 @@ const App = (() => {
         ${m.minStock>0?`<div class="prog"><div class="prog-fill ${ss}" style="width:${pct}%"></div></div>`:''}
         <div class="med-actions">
           <button class="btn btn-s btn-sm" onclick="App.openMedModal('${m.id}')">✏️ Editar</button>
-          <button class="btn btn-sm ${m.forSIGRE?'btn-g':'btn-w'}" onclick="App.toggleSIGRE('${m.id}')">♻️ ${m.forSIGRE?'Quitar':'SIGRE'}</button>
+          <button class="btn btn-sm ${m.forSIGRE?'btn-g':'btn-w'}" onclick="App.toggleSIGRE('${m.id}')">♻️ ${m.forSIGRE?'Quitar SIGRE':'SIGRE'}</button>
           <button class="btn btn-d btn-sm" onclick="App.delConfirm('med','${m.id}')">🗑️</button>
         </div>
       </div>`;
