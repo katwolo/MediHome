@@ -723,7 +723,11 @@ const App = (() => {
   // ── Utils ─────────────────────────────────────────────────
   const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2,7);
   const esc = s => !s ? '' : String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-  const parseYM = d => {
+  const fmtDate = d => {
+    if (!d) return '';
+    const [y,mo,dd] = d.split('-');
+    return `${dd}/${mo}/${y}`;
+  };
     if (!d) return null;
     const s = String(d).trim();
     let x = s.match(/^(\d{4})-(\d{2})/);
@@ -837,7 +841,7 @@ const App = (() => {
       : recent.map(d=>{
           const med = S.meds.find(m=>m.id===d.medicineId);
           const nm  = med ? med.name : d.medicineName || '?';
-          return `<div class="dose-item"><div class="dose-dot"></div><div class="dose-info"><div class="dose-med">${esc(nm)}</div><div class="dose-time">${d.date}${d.time?' · '+d.time:''}</div></div><div class="dose-qty">${d.quantity} ud.</div></div>`;
+          return `<div class="dose-item"><div class="dose-dot"></div><div class="dose-info"><div class="dose-med">${esc(nm)}</div><div class="dose-time">${fmtDate(d.date)}${d.time?' · '+d.time:''}</div></div><div class="dose-qty">${d.quantity} ud.</div></div>`;
         }).join('');
   }
 
