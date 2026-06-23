@@ -285,7 +285,7 @@ textarea.fc{height:auto;min-height:76px;padding:.75rem .875rem;resize:none}
     </div>
     <div class="search">
       <span class="search-ico">🔍</span>
-      <input type="text" id="search" placeholder="Buscar medicamento…">
+      <input type="text" id="search" placeholder="Buscar por nombre o principio activo…">
     </div>
     <div class="pills" id="pills">
       <button class="pill active" data-f="all">Todos</button>
@@ -846,7 +846,7 @@ const App = (() => {
     const q = S.q.toLowerCase();
     const f = S.filter;
     const filtered = S.meds.filter(m => {
-      if (q && !m.name.toLowerCase().includes(q) && !(m.location||'').toLowerCase().includes(q)) return false;
+      if (q && !m.name.toLowerCase().includes(q) && !(m.lab||'').toLowerCase().includes(q) && !(m.location||'').toLowerCase().includes(q)) return false;
       if (f === 'low')      return stockStatus(m) !== 'ok';
       if (f === 'expiring') return expStatus(m) === 'soon';
       if (f === 'expired')  return expStatus(m) === 'expired';
@@ -1330,7 +1330,7 @@ const App = (() => {
     document.getElementById('mt-med-search').addEventListener('input', () => {
       const q = document.getElementById('mt-med-search').value.toLowerCase();
       const current = document.getElementById('mt-med').value;
-      const meds = S.meds.filter(m => !m.forSIGRE && m.name.toLowerCase().includes(q));
+      const meds = S.meds.filter(m => !m.forSIGRE && (m.name.toLowerCase().includes(q) || (m.lab||'').toLowerCase().includes(q)));
       document.getElementById('mt-med').innerHTML =
         '<option value="">Seleccionar medicamento…</option>' +
         meds.map(m => `<option value="${m.id}"${m.id===current?' selected':''}>${esc(m.name)} (${m.quantity} ${m.unit})</option>`).join('');
