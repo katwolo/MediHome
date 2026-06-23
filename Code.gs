@@ -329,6 +329,8 @@ function jsonResponse(data) {
 // per crear les 3 pestanyes amb les capçaleres correctes.
 function initSheets() {
   const ss = getSpreadsheet();
+  const validNames = new Set(Object.values(CFG).map(c => c.SHEET_NAME));
+
   Object.values(CFG).forEach(cfg => {
     let sheet = ss.getSheetByName(cfg.SHEET_NAME);
     if (!sheet) {
@@ -343,10 +345,16 @@ function initSheets() {
         .setFontColor('#FFFFFF')
         .setFontWeight('bold');
       sheet.setFrozenRows(1);
-      // Amplades de columna per llegibilitat
       sheet.setColumnWidth(1, 120); // ID
       sheet.setColumnWidth(2, 180); // Nom
     }
   });
+
+  // Elimina pestanyes que no pertanyen a MediHome
+  // (p.ex. la "Hoja 1" que crea Google per defecte)
+  ss.getSheets()
+    .filter(s => !validNames.has(s.getName()))
+    .forEach(s => ss.deleteSheet(s));
+
   SpreadsheetApp.getUi().alert('✅ Pestanyes creades correctament!');
 }
