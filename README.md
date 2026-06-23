@@ -45,7 +45,7 @@ Cada medicamento almacena los siguientes campos:
 | Campo | Descripción |
 |-------|-------------|
 | Nombre | Nombre del medicamento |
-| Laboratorio | Fabricante o marca |
+| Principio activo | Principio activo del medicamento |
 | Cantidad | Unidades disponibles actualmente |
 | Unidad | comprimidos, ml, cápsulas, etc. |
 | Stock mínimo | Alerta cuando la cantidad baje de este valor |
@@ -85,7 +85,7 @@ El script trabaja con tres pestañas. Las cabeceras de la **fila 1** deben ser e
 
 **Medicaments** (15 columnas A–O)
 ```
-ID | Nom | Lab | Quantitat | Unitat | StockMinim | Caducitat | Ubicacio | Categoria | Mascota | Notes | SIGRE | DataSIGRE | DataCreacio | Estat
+ID | Nom | PrincipioActivo | Quantitat | Unitat | StockMinim | Caducitat | Ubicacio | Categoria | Mascota | Notes | SIGRE | DataSIGRE | DataCreacio | Estat
 ```
 
 **Tractaments** (12 columnas A–L)

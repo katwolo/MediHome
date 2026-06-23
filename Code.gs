@@ -14,7 +14,7 @@
  *   Usar la URL /exec al frontend (mai /dev en producció).
  *
  * CAPÇALERES DEL FULL (fila 1, s'ha de crear manualment o via initSheets()):
- *   Medicaments:  ID | Nom | Lab | Quantitat | Unitat | StockMinim | Caducitat |
+ *   Medicaments:  ID | Nom | PrincipioActivo | Quantitat | Unitat | StockMinim | Caducitat |
  *                 Ubicacio | Categoria | Mascota | Notes | SIGRE | DataSIGRE | DataCreacio | Estat
  *   Tractaments:  ID | Nom | MedicamentID | MedicamentNom | DosisQuantitat |
  *                 Frequencia | Instruccions | DataInici | DataFi | Actiu | DataCreacio | Estat
@@ -43,7 +43,7 @@ const CFG = {
       SIGRE: 12, DATA_SIGRE: 13, DATA_CREACIO: 14, ESTAT: 15,
     },
     TOTAL_COLS: 15,
-    HEADERS: ['ID','Nom','Lab','Quantitat','Unitat','StockMinim','Caducitat',
+    HEADERS: ['ID','Nom','PrincipioActivo','Quantitat','Unitat','StockMinim','Caducitat',
               'Ubicacio','Categoria','Mascota','Notes','SIGRE','DataSIGRE','DataCreacio','Estat'],
   },
   tractaments: {
