@@ -685,8 +685,8 @@ const App = (() => {
     API.post(payload).catch(err => toast('⚠️ Sync: ' + err.message, 'warn'));
   }
 
-  async function syncFromAPI() {
-    toast('Sincronizando con Google Sheets…');
+  async function syncFromAPI(silent = false) {
+    if (!silent) toast('Sincronizando con Google Sheets…');
     try {
       const [meds, treats, doses] = await Promise.all([
         API.get('medicaments', 'tots'),
@@ -697,10 +697,10 @@ const App = (() => {
       if (Array.isArray(treats)) S.treats = treats;
       if (Array.isArray(doses))  S.doses  = doses;
       save(); updateSIGREBadge(); render(S.section);
-      toast('Datos sincronizados ✓', 'ok');
+      if (!silent) toast('Datos sincronizados ✓', 'ok');
       return true;
     } catch (err) {
-      toast('Error sync: ' + err.message, 'err');
+      if (!silent) toast('Error sync: ' + err.message, 'err');
       console.error('[syncFromAPI]', err);
       return false;
     }
@@ -1132,9 +1132,13 @@ const App = (() => {
     document.getElementById('m-dose').classList.add('active');
   }
 
-  function saveDose() {
+  async function saveDose() {
     const t = S.treats.find(x=>x.id===S.doseTreatId);
     if (!t) return;
+
+    // Sync before deducting so we work with the latest stock from Sheets
+    if (API.url) await syncFromAPI(true);
+
     const qty  = parseFloat(document.getElementById('md-qty').value)||1;
     const date = document.getElementById('md-date').value;
     const time = document.getElementById('md-time').value;
@@ -1152,7 +1156,6 @@ const App = (() => {
     S.doses.push(dose);
     save(); closeM('m-dose');
     toast(`✓ Dosis registrada${med?' · '+med.quantity+' '+med.unit+' restantes':''}`, 'ok');
-    // Sync: nova dosi + nou stock del medicament
     apiPost({ accio:'crear', entitat:'dosis', ...dose });
     if (med) apiPost({ accio:'editar', entitat:'medicaments', id:med.id, quantity:med.quantity });
     renderTreats();
@@ -1455,10 +1458,17 @@ const App = (() => {
     if (S.gsUrl) {
       document.getElementById('gsheets-status').textContent = 'URL configurada ✓';
       document.getElementById('s-sync').style.display = 'flex';
-      // Mostra dades locals immediatament mentre carrega l'API
       updateSIGREBadge();
       go('inicio');
-      await syncFromAPI(); // actualitza en segon pla
+      await syncFromAPI();
+
+      // Auto-sync every 5 minutes while the app is open
+      setInterval(() => { if (S.gsUrl) syncFromAPI(true); }, 5 * 60 * 1000);
+
+      // Sync when the user returns to the app (tab focus / phone unlock)
+      document.addEventListener('visibilitychange', () => {
+        if (!document.hidden && S.gsUrl) syncFromAPI(true);
+      });
     } else {
       seed(); // únicament sense API URL
       updateSIGREBadge();
