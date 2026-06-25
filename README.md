@@ -74,7 +74,7 @@ La app puede conectarse a una hoja de Google Sheets mediante un script de Apps S
 ### URL del script activo
 
 ```
-https://script.google.com/macros/s/AKfycbx4SXDFccnB_TZSuRSZrEg5yQ-CfsbQ4acScafWw6HylHx-zGN1pKURy1RXefwlvpg01Q/exec
+https://script.google.com/macros/s/AKfycbxMecoCF3POA0wCZMpC8R_rOSPifmxufcfd5gVvRMhhTYUwuDlUrgLcqx9asFYvHJbGaA/exec
 ```
 
 Para configurarla en la app: **Configuración → icono de Google Sheets → pegar la URL → Guardar**.
