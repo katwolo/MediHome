@@ -242,6 +242,19 @@ function trobaFila(sheet, id, cfg) {
   return null;
 }
 
+// ── fmtTime ───────────────────────────────────────────────────
+// Normalizes a Sheets time value (Date object or string) to HH:MM.
+function fmtTime(v) {
+  if (!v) return '';
+  if (v instanceof Date) {
+    return String(v.getHours()).padStart(2,'0') + ':' + String(v.getMinutes()).padStart(2,'0');
+  }
+  const s = String(v).trim();
+  if (/^\d{1,2}:\d{2}$/.test(s)) return s;
+  const m = s.match(/(\d{2}:\d{2}):\d{2}/);
+  return m ? m[1] : s;
+}
+
 // ── dateToYYYYMM ──────────────────────────────────────────────
 // Normalizes any date value from Sheets to YYYY-MM string.
 // Handles: Date objects, "DD/MM/YYYY", "YYYY-MM-DD", "YYYY-MM".
@@ -308,7 +321,7 @@ function rowToObj(r, entitat, cfg) {
       medicineName: String(r[C.MEDICAMENT_NOM - 1]  || ''),
       quantity:     parseFloat(r[C.QUANTITAT - 1])  || 0,
       date:         String(r[C.DATA - 1]            || ''),
-      time:         String(r[C.HORA - 1]            || ''),
+      time:         fmtTime(r[C.HORA - 1]),
       notes:        String(r[C.NOTES - 1]           || ''),
       createdAt:    String(r[C.DATA_CREACIO - 1]    || '') || new Date().toISOString(),
     };
